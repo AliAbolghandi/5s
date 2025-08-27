@@ -14,14 +14,14 @@
     .hidden { display: none; }
     button { padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; border-radius: 8px; }
 
-    /* --- پاپ آپ --- */
+    /* پاپ‌آپ */
     #popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0;
              background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; }
     #popupContent { background: white; padding: 20px; border-radius: 12px; width: 80%; max-height: 80%; overflow-y: auto; }
     #popup table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
     #popup th, #popup td { border: 1px solid #ccc; padding: 6px; text-align: center; }
 
-    /* --- برای موبایل --- */
+    /* موبایل */
     @media (max-width: 600px) {
       body { padding: 10px; font-size: 14px; }
       .question label { font-size: 14px; }
@@ -38,13 +38,13 @@
   <div id="total" class="hidden">جمع نمره‌ها: 0</div>
   <button id="submitBtn" class="hidden">ثبت ارزیابی</button>
 
-  <!-- پاپ آپ -->
+  <!-- پاپ‌آپ -->
   <div id="popup">
     <div id="popupContent">
       <h3>پیش‌نمایش ارزیابی</h3>
       <div id="reviewTable"></div>
       <button id="confirmBtn">تأیید و ذخیره</button>
-      <button onclick="closePopup()">انصراف</button>
+      <button id="cancelBtn">انصراف</button>
     </div>
   </div>
 
@@ -61,7 +61,7 @@
         .then(res => res.arrayBuffer())
         .then(buffer => {
           const decoder = new TextDecoder("utf-8");
-          const data = decoder.decode(buffer);
+          const data = cleanText(decoder.decode(buffer));
           const rows = data.trim().split("\n").map(r => r.split(","));
 
           const container = document.getElementById("questions");
@@ -75,7 +75,7 @@
             div.className = "question";
             div.innerHTML = `
               <label>${idx+1}. ${questionText}</label>
-              <input type="text" maxlength="1" pattern="[0-9]" class="score" />
+              <input type="number" min="0" max="9" class="score" />
             `;
             container.appendChild(div);
           });
@@ -84,8 +84,9 @@
 
           inputs.forEach((inp, i) => {
             inp.addEventListener("input", () => {
-              if (!/^[0-9]$/.test(inp.value)) inp.value = "";
-              else if (i < inputs.length - 1) inputs[i+1].focus(); // پرش به سوال بعدی
+              if (inp.value.length > 0 && i < inputs.length - 1) {
+                inputs[i+1].focus(); // پرش به سوال بعدی
+              }
               updateTotal();
             });
           });
@@ -110,6 +111,50 @@
       const totalDiv = document.getElementById("total");
       const submitBtn = document.getElementById("submitBtn");
 
+      if (filledCount === scores.length && scores.length > 0) {
+        totalDiv.innerText = "جمع نمره‌ها: " + sum;
+        totalDiv.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
+      } else {
+        totalDiv.classList.add("hidden");
+        submitBtn.classList.add("hidden");
+      }
+    }
+
+    // باز کردن پاپ‌آپ
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const rows = [];
+      document.querySelectorAll(".question").forEach(q => {
+        const question = q.querySelector("label").innerText;
+        const score = q.querySelector("input").value;
+        rows.push({question, score});
+      });
+
+      let html = "<table><tr><th>سوال</th><th>امتیاز</th></tr>";
+      rows.forEach(r => {
+        html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("reviewTable").innerHTML = html;
+
+      document.getElementById("popup").style.display = "flex";
+    });
+
+    // بستن پاپ‌آپ
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      document.getElementById("popup").style.display = "none";
+    });
+
+    // تأیید و ذخیره
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      alert("✅ داده‌ها آماده ارسال به گوگل شیت هستند.");
+      document.getElementById("popup").style.display = "none";
+    });
+
+    loadQuestions();
+  </script>
+</body>
+</html>
       if (filledCount === scores.length) {
         totalDiv.innerText = "جمع نمره‌ها: " + sum;
         totalDiv.classList.remove("hidden");
@@ -224,5 +269,6 @@
   </script>
 </body>
 </html>
+
 
 
