@@ -2,195 +2,114 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>فرم ارزیابی</title>
   <style>
-    body {
-      font-family: tahoma, sans-serif;
-      margin: 20px;
-      text-align: center;
-    }
-
-    #loading {
-      font-size: 16px;
-      margin: 20px;
-    }
-
-    .question {
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 5px;
-    }
-
-    label {
-      flex: 1;
-      text-align: right;
-      padding-left: 10px;
-    }
-
-    input.score {
-      width: 80px;
-      padding: 5px;
-      text-align: center;
-      font-size: 16px;
-    }
-
-    /* حالت موبایل */
+    body { font-family: tahoma, sans-serif; margin: 20px; text-align: center; }
+    #loading { font-size: 16px; margin: 20px; }
+    .question { margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding: 5px; }
+    label { flex:1; text-align: right; padding-left: 10px; }
+    input.score { width: 80px; padding: 5px; text-align: center; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; }
     @media (max-width: 600px) {
-      input.score {
-        width: 45px;
-        padding: 3px;
-        font-size: 14px;
-      }
-      label {
-        font-size: 14px;
-      }
+      input.score { width: 45px; padding: 3px; font-size: 14px; }
+      label { font-size: 14px; }
     }
-
-    #submitBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    /* استایل پاپ‌آپ */
-    #popup {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #popupContent {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th, td {
-      padding: 5px;
-      font-size: 14px;
-    }
-
-    #confirmBtn, #cancelBtn {
-      margin: 10px;
-      padding: 8px 15px;
-      cursor: pointer;
-    }
+    #submitBtn { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #popup { position: fixed; top:0; right:0; left:0; bottom:0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
+    #popupContent { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 5px; font-size: 14px; }
+    th { background: #f1f1f1; }
+    #confirmBtn, #cancelBtn { margin: 10px; padding: 8px 15px; font-size: 14px; cursor: pointer; border-radius: 6px; border: none; }
+    #confirmBtn { background: #28a745; color: white; }
+    #cancelBtn { background: #dc3545; color: white; }
   </style>
 </head>
 <body>
   <h2>فرم ارزیابی</h2>
-
   <div id="loading">⏳ در حال بارگذاری سوالات...</div>
   <div id="questionsContainer" style="display:none;"></div>
+  <button id="submitBtn" style="display:none;">ثبت ارزیابی</button>
 
-  <button id="submitBtn" class="hidden">ثبت ارزیابی</button>
-
-  <!-- پاپ‌آپ -->
   <div id="popup">
     <div id="popupContent">
       <h3>بازبینی ارزیابی</h3>
       <table>
-        <thead>
-          <tr><th>سوال</th><th>امتیاز</th></tr>
-        </thead>
+        <thead><tr><th>سوال</th><th>امتیاز</th></tr></thead>
         <tbody id="reviewTable"></tbody>
       </table>
-      <div>
-        <button id="confirmBtn">تأیید و ذخیره</button>
-        <button id="cancelBtn">انصراف</button>
-      </div>
+      <button id="confirmBtn">تأیید و ذخیره</button>
+      <button id="cancelBtn">انصراف</button>
     </div>
   </div>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-XXXX/pub?output=csv"; // اینو با لینک CSV شیت خودت عوض کن
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?output=csv";
 
     function loadQuestions() {
       document.getElementById("loading").style.display = "block";
       document.getElementById("questionsContainer").style.display = "none";
+      document.getElementById("submitBtn").style.display = "none";
 
       fetch(SHEET_URL)
         .then(res => res.text())
         .then(csv => {
           const rows = csv.split("\n").map(r => r.trim()).filter(r => r);
-          let html = "";
-          rows.forEach((q, i) => {
-            if (!q) return;
-            html += `
-              <div class="question">
-                <label>${i+1}. ${q.replace(/[^\u0600-\u06FF0-9؟\s]/g, "")}</label>
-                <input type="number" class="score" data-q="${q}" />
-              </div>
-            `;
-          });
-          document.getElementById("questionsContainer").innerHTML = html;
-          document.getElementById("loading").style.display = "none";
-          document.getElementById("questionsContainer").style.display = "block";
+          const container = document.getElementById("questionsContainer");
+          container.innerHTML = "";
 
-          // حرکت اتومات به باکس بعدی
+          rows.forEach((q, i) => {
+            container.innerHTML += `
+              <div class="question">
+                <label>${i+1}. ${q.replace(/[\u200C\u200F]/g, "")}</label>
+                <input type="number" min="0" max="9" class="score" data-idx="${i}">
+              </div>`;
+          });
+
+          document.getElementById("loading").style.display = "none";
+          container.style.display = "block";
+
           const inputs = document.querySelectorAll(".score");
           inputs.forEach((inp, idx) => {
-            inp.addEventListener("input", e => {
-              if (e.target.value && idx < inputs.length-1) {
-                inputs[idx+1].focus();
-              }
+            inp.addEventListener("input", (e) => {
+              if (e.target.value && idx < inputs.length -1) inputs[idx+1].focus();
+              checkShowSubmit();
             });
           });
         })
-        .catch(err => {
+        .catch(() => {
           document.getElementById("loading").innerText = "❌ خطا در بارگذاری سوالات";
-          console.error(err);
         });
     }
 
-    // باز کردن پاپ‌آپ برای بررسی
+    function checkShowSubmit() {
+      const inputs = document.querySelectorAll(".score");
+      const allFilled = [...inputs].every(inp => inp.value !== "");
+      document.getElementById("submitBtn").style.display = allFilled ? "inline-block" : "none";
+    }
+
     document.getElementById("submitBtn").addEventListener("click", () => {
       const rows = [];
       document.querySelectorAll(".question").forEach(q => {
-        const question = q.querySelector("label").innerText;
-        const score = q.querySelector("input").value;
-        rows.push({question, score});
+        rows.push({
+          question: q.querySelector("label").innerText,
+          score: q.querySelector("input").value
+        });
       });
-
       let html = "";
-      rows.forEach(r => {
-        html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`;
-      });
+      rows.forEach(r => html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`);
       document.getElementById("reviewTable").innerHTML = html;
       document.getElementById("popup").style.display = "flex";
     });
 
-    // بستن پاپ‌آپ
     document.getElementById("cancelBtn").addEventListener("click", () => {
       document.getElementById("popup").style.display = "none";
     });
 
-    // تایید و ذخیره
     document.getElementById("confirmBtn").addEventListener("click", () => {
-      alert("✅ داده‌ها آماده ارسال به گوگل شیت هستند.");
+      alert("داده‌ها آماده‌ است برای ارسال به Google Sheets.");
       document.getElementById("popup").style.display = "none";
-      // اینجا باید کد ارسال به Google Apps Script اضافه شه
+      // برای ذخیره واقعی: WebApp Google Apps Script می‌خواهیم
     });
 
     loadQuestions();
