@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>ارزیابی 5s مجتمع فولاد روهینا جنوب</title>
+  <title>فرم ارزیابی</title>
   <style>
     body { font-family: sans-serif; direction: rtl; max-width: 700px; margin: auto; padding: 20px; }
     .question { display: flex; align-items: center; margin: 8px 0; background: #f9f9f9; padding: 8px; border-radius: 8px; }
@@ -13,49 +13,54 @@
   </style>
 </head>
 <body>
-  <h2>ارزیابی</h2>
-  <div id="questions">? ?? ??? ???????? ??????...</div>
-  <div id="total" class="hidden">??? ???????: 0</div>
+  <h2>فرم ارزیابی</h2>
+  <div id="questions">⏳ در حال بارگذاری سوالات...</div>
+  <div id="total" class="hidden">جمع نمره‌ها: 0</div>
 
   <script>
-    // ???? CSV ????? ??? ?? Google Sheets
     const googleSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
 
-    // ??????? ?? AllOrigins ???? ??? ??? CORS
-    const sheetURL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleSheetCSV);
+    function cleanText(text) {
+      // حذف کاراکترهای عجیب و غیر فارسی
+      return text.replace(/[^\x00-\x7F\u0600-\u06FF\s.,؟]/g, '').trim();
+    }
 
-    fetch(sheetURL)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split("\n").map(r => r.split(","));
-        const container = document.getElementById("questions");
-        container.innerHTML = "";
+    function loadQuestions() {
+      fetch(googleSheetCSV)
+        .then(res => res.arrayBuffer())
+        .then(buffer => {
+          const decoder = new TextDecoder("utf-8"); 
+          const data = decoder.decode(buffer);
+          const rows = data.trim().split("\n").map(r => r.split(","));
+          const container = document.getElementById("questions");
+          container.innerHTML = "";
 
-        rows.forEach((row, idx) => {
-          if (idx === 0) return; // ??? ??? ?????
-          const questionText = row[0]?.trim();
-          if (!questionText) return;
+          // فقط سطر دوم به بعد (سوالات واقعی)
+          rows.slice(1).forEach((row, idx) => {
+            const questionText = cleanText(row[0]);
+            if (!questionText) return;
 
-          const div = document.createElement("div");
-          div.className = "question";
-          div.innerHTML = `
-            <label>${idx}. ${questionText}</label>
-            <input type="text" maxlength="1" pattern="[0-9]" class="score" />
-          `;
-          container.appendChild(div);
-        });
-
-        document.querySelectorAll(".score").forEach(inp => {
-          inp.addEventListener("input", () => {
-            if (!/^[0-9]$/.test(inp.value)) inp.value = "";
-            updateTotal();
+            const div = document.createElement("div");
+            div.className = "question";
+            div.innerHTML = `
+              <label>${idx+1}. ${questionText}</label>
+              <input type="text" maxlength="1" pattern="[0-9]" class="score" />
+            `;
+            container.appendChild(div);
           });
+
+          document.querySelectorAll(".score").forEach(inp => {
+            inp.addEventListener("input", () => {
+              if (!/^[0-9]$/.test(inp.value)) inp.value = "";
+              updateTotal();
+            });
+          });
+        })
+        .catch(err => {
+          document.getElementById("questions").innerText = "❌ خطا در بارگذاری سوالات.";
+          console.error("FETCH ERROR:", err);
         });
-      })
-      .catch(err => {
-        document.getElementById("questions").innerText = "? ??? ?? ???????? ??????.";
-        console.error("FETCH ERROR:", err);
-      });
+    }
 
     function updateTotal() {
       let sum = 0;
@@ -69,14 +74,19 @@
         }
       });
       const totalDiv = document.getElementById("total");
-      if (filledCount === scores.length) {
-        totalDiv.innerText = "??? ???????: " + sum;
+      if (filledCount === scores.length && scores.length > 0) {
+        totalDiv.innerText = "جمع نمره‌ها: " + sum;
         totalDiv.classList.remove("hidden");
       } else {
         totalDiv.classList.add("hidden");
       }
     }
+
+    // بارگذاری اولیه
+    loadQuestions();
+
+    // آپدیت خودکار هر 30 ثانیه
+    setInterval(loadQuestions, 30000);
   </script>
 </body>
-
 </html>
