@@ -21,7 +21,7 @@
     const googleSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
 
     function cleanText(text) {
-       حذف کاراکترهای عجیب و غیر فارسی
+      // حذف کاراکترهای عجیب و غیر فارسی
       return text.replace(/[^\x00-\x7F\u0600-\u06FF\s.,؟]/g, '').trim();
     }
 
@@ -90,6 +90,3 @@
   </script>
 </body>
 </html>
-
-
-
