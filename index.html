@@ -10,34 +10,55 @@
     .question input { width: 40px; text-align: center; font-size: 16px; }
     #total { font-weight: bold; font-size: 20px; margin-top: 20px; }
     .hidden { display: none; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; border-radius: 8px; }
+    /* --- پاپ آپ --- */
+    #popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+             background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; }
+    #popupContent { background: white; padding: 20px; border-radius: 12px; width: 80%; max-height: 80%; overflow-y: auto; }
+    #popup table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    #popup th, #popup td { border: 1px solid #ccc; padding: 6px; text-align: center; }
   </style>
 </head>
 <body>
   <h2>فرم ارزیابی</h2>
   <div id="questions">⏳ در حال بارگذاری سوالات...</div>
   <div id="total" class="hidden">جمع نمره‌ها: 0</div>
+  <button id="submitBtn" class="hidden">ثبت ارزیابی</button>
+
+  <!-- پاپ آپ -->
+  <div id="popup">
+    <div id="popupContent">
+      <h3>پیش‌نمایش ارزیابی</h3>
+      <div id="reviewTable"></div>
+      <button id="confirmBtn">تأیید و ذخیره</button>
+      <button onclick="closePopup()">انصراف</button>
+    </div>
+  </div>
 
   <script>
-    const googleSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
 
+    // حذف کاراکترهای مخفی
     function cleanText(text) {
-      // حذف کاراکترهای عجیب و غیر فارسی
-      return text.replace(/[^\x00-\x7F\u0600-\u06FF\s.,؟]/g, '').trim();
+      return text
+        .replace(/\uFEFF/g, "")
+        .replace(/[\u200B-\u200F]/g, "")
+        .replace(/[\u202A-\u202E]/g, "");
     }
 
     function loadQuestions() {
-      fetch(googleSheetCSV)
+      fetch(sheetURL)
         .then(res => res.arrayBuffer())
         .then(buffer => {
           const decoder = new TextDecoder("utf-8"); 
           const data = decoder.decode(buffer);
           const rows = data.trim().split("\n").map(r => r.split(","));
+
           const container = document.getElementById("questions");
           container.innerHTML = "";
 
-          // فقط سطر دوم به بعد (سوالات واقعی)
-          rows.slice(1).forEach((row, idx) => {
-            const questionText = cleanText(row[0]);
+          rows.forEach((row, idx) => {
+            const questionText = cleanText(row[0]?.trim());
             if (!questionText) return;
 
             const div = document.createElement("div");
@@ -74,19 +95,51 @@
         }
       });
       const totalDiv = document.getElementById("total");
-      if (filledCount === scores.length && scores.length > 0) {
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (filledCount === scores.length) {
         totalDiv.innerText = "جمع نمره‌ها: " + sum;
         totalDiv.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
       } else {
         totalDiv.classList.add("hidden");
+        submitBtn.classList.add("hidden");
       }
     }
 
-    // بارگذاری اولیه
-    loadQuestions();
+    // باز کردن پاپ آپ
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const rows = [];
+      document.querySelectorAll(".question").forEach(q => {
+        const question = q.querySelector("label").innerText;
+        const score = q.querySelector("input").value;
+        rows.push({question, score});
+      });
 
-    // آپدیت خودکار هر 30 ثانیه
-    setInterval(loadQuestions, 30000);
+      // ساخت جدول
+      let html = "<table><tr><th>سوال</th><th>امتیاز</th></tr>";
+      rows.forEach(r => {
+        html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("reviewTable").innerHTML = html;
+
+      document.getElementById("popup").style.display = "flex";
+    });
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    // تأیید و ذخیره در شیت
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      // 🔹 اینجا باید داده‌ها رو به Google Sheets بفرستیم
+      // برای این کار باید یک Google Apps Script Web App بنویسیم
+      alert("✅ داده‌ها آماده ارسال به گوگل شیت هستند.");
+      closePopup();
+    });
+
+    loadQuestions();
   </script>
 </body>
 </html>
