@@ -153,6 +153,51 @@
     loadQuestions();
   </script>
 </body>
+</html>      const submitBtn = document.getElementById("submitBtn");
+
+      if (filledCount === scores.length) {
+        totalDiv.innerText = "جمع نمره‌ها: " + sum;
+        totalDiv.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
+      } else {
+        totalDiv.classList.add("hidden");
+        submitBtn.classList.add("hidden");
+      }
+    }
+
+    // باز کردن پاپ آپ
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const rows = [];
+      document.querySelectorAll(".question").forEach(q => {
+        const question = q.querySelector("label").innerText;
+        const score = q.querySelector("input").value;
+        rows.push({question, score});
+      });
+
+      // ساخت جدول
+      let html = "<table><tr><th>سوال</th><th>امتیاز</th></tr>";
+      rows.forEach(r => {
+        html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("reviewTable").innerHTML = html;
+
+      document.getElementById("popup").style.display = "flex";
+    });
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    // تأیید و ذخیره در شیت
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      alert("✅ داده‌ها آماده ارسال به گوگل شیت هستند.");
+      closePopup();
+    });
+
+    loadQuestions();
+  </script>
+</body>
 </html>      let html = "<table><tr><th>سوال</th><th>امتیاز</th></tr>";
       rows.forEach(r => {
         html += `<tr><td>${r.question}</td><td>${r.score}</td></tr>`;
@@ -179,4 +224,5 @@
   </script>
 </body>
 </html>
+
 
