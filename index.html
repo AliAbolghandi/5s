@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>??? ???????</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; max-width: 700px; margin: auto; padding: 20px; }
+    .question { display: flex; align-items: center; margin: 8px 0; background: #f9f9f9; padding: 8px; border-radius: 8px; }
+    .question label { flex: 1; }
+    .question input { width: 40px; text-align: center; font-size: 16px; }
+    #total { font-weight: bold; font-size: 20px; margin-top: 20px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h2>??? ???????</h2>
+  <div id="questions">? ?? ??? ???????? ??????...</div>
+  <div id="total" class="hidden">??? ???????: 0</div>
+
+  <script>
+    // ???? CSV ????? ??? ?? Google Sheets
+    const googleSheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
+
+    // ??????? ?? AllOrigins ???? ??? ??? CORS
+    const sheetURL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleSheetCSV);
+
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(data => {
+        const rows = data.trim().split("\n").map(r => r.split(","));
+        const container = document.getElementById("questions");
+        container.innerHTML = "";
+
+        rows.forEach((row, idx) => {
+          if (idx === 0) return; // ??? ??? ?????
+          const questionText = row[0]?.trim();
+          if (!questionText) return;
+
+          const div = document.createElement("div");
+          div.className = "question";
+          div.innerHTML = `
+            <label>${idx}. ${questionText}</label>
+            <input type="text" maxlength="1" pattern="[0-9]" class="score" />
+          `;
+          container.appendChild(div);
+        });
+
+        document.querySelectorAll(".score").forEach(inp => {
+          inp.addEventListener("input", () => {
+            if (!/^[0-9]$/.test(inp.value)) inp.value = "";
+            updateTotal();
+          });
+        });
+      })
+      .catch(err => {
+        document.getElementById("questions").innerText = "? ??? ?? ???????? ??????.";
+        console.error("FETCH ERROR:", err);
+      });
+
+    function updateTotal() {
+      let sum = 0;
+      let filledCount = 0;
+      const scores = document.querySelectorAll(".score");
+      scores.forEach(inp => {
+        const v = parseInt(inp.value);
+        if (!isNaN(v)) {
+          sum += v;
+          filledCount++;
+        }
+      });
+      const totalDiv = document.getElementById("total");
+      if (filledCount === scores.length) {
+        totalDiv.innerText = "??? ???????: " + sum;
+        totalDiv.classList.remove("hidden");
+      } else {
+        totalDiv.classList.add("hidden");
+      }
+    }
+  </script>
+</body>
+</html>
