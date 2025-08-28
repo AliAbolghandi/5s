@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>ورود / ثبت‌نام</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      direction: rtl; 
+      padding: 20px; 
+      background-color: #f8f9fa; 
+      margin: 0;
+    }
+    .container { 
+      max-width: 400px; 
+      margin: 50px auto; 
+      background: white; 
+      padding: 30px; 
+      border-radius: 15px; 
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+    }
+    .tab { 
+      margin: 10px; 
+      padding: 12px 25px; 
+      cursor: pointer; 
+      border-radius: 8px; 
+      display: inline-block; 
+      transition: all 0.3s ease;
+    }
+    .active { 
+      background: #007bff; 
+      color: white; 
+      box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+    }
+    .form { 
+      display: none; 
+      margin-top: 25px; 
+    }
+    .form input { 
+      display: block; 
+      margin: 15px 0; 
+      padding: 12px; 
+      width: 100%; 
+      box-sizing: border-box; 
+      border: 2px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+    .form input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    .btn { 
+      padding: 12px 25px; 
+      background: #28a745; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      width: 100%; 
+      font-size: 16px; 
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .btn:hover { 
+      background: #218838; 
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+    #loading { 
+      display: none; 
+      margin: 25px 0; 
+      text-align: center; 
+    }
+    #loading img { 
+      width: 60px; 
+      height: 60px;
+    }
+    .error { 
+      color: #dc3545; 
+      margin-top: 15px; 
+      text-align: center; 
+      font-weight: 500;
+      padding: 10px;
+      background: #f8d7da;
+      border-radius: 5px;
+      border: 1px solid #f5c6cb;
+    }
+    .success { 
+      color: #155724; 
+      margin-top: 15px; 
+      text-align: center; 
+      font-weight: 500;
+      padding: 10px;
+      background: #d4edda;
+      border-radius: 5px;
+      border: 1px solid #c3e6cb;
+    }
+    h2 { 
+      text-align: center; 
+      margin-bottom: 25px; 
+      color: #2c3e50;
+      font-size: 24px;
+    }
+    .tab-container {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>سامانه ارزیابی کارخانه</h2>
+    <div class="tab-container">
+      <span class="tab active" onclick="showTab('register')">ثبت‌نام</span>
+      <span class="tab" onclick="showTab('login')">ورود</span>
+    </div>
+
+    <!-- ثبت نام -->
+    <div id="register" class="form" style="display:block;">
+      <input type="text" id="reg_name" placeholder="نام" required>
+      <input type="text" id="reg_family" placeholder="نام خانوادگی" required>
+      <input type="tel" id="reg_phone" placeholder="شماره همراه (09xxxxxxxxx)" required pattern="09[0-9]{9}">
+      <input type="password" id="reg_pass" placeholder="رمز عبور (حداقل ۸ کاراکتر)" required minlength="8">
+      <button class="btn" onclick="registerUser()">ثبت‌نام</button>
+      <div id="reg_error" class="error"></div>
+      <div id="reg_success" class="success"></div>
+    </div>
+
+    <!-- ورود -->
+    <div id="login" class="form">
+      <input type="tel" id="login_phone" placeholder="شماره همراه" required>
+      <input type="password" id="login_pass" placeholder="رمز عبور" required>
+      <button class="btn" onclick="loginUser()">ورود به سیستم</button>
+      <div id="loading">
+        <img src="data:image/svg+xml;base64,PHN2Zy xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid' width='60' height='60'><circle cx='50' cy='50' fill='none' stroke='%23007bff' stroke-width='10' r='35' stroke-dasharray='164.93361431346415 56.97787143782138' transform='rotate(120 50 50)'><animateTransform attributeName='transform' type='rotate' repeatCount='indefinite' dur='1s' values='0 50 50;360 50 50' keyTimes='0;1'/></circle></svg>" alt="در حال بارگذاری">
+      </div>
+      <div id="login_error" class="error"></div>
+    </div>
+  </div>
+
+  <script>
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxnKDz2V3c6vgl7c7PGhkyA5-yGTRdZAMbbp354Fu-wgeZNKjwXh5wNJn6AjYO6S4pi/exec";
+
+    // سوئیچ بین تب‌ها
+    function showTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove("active"));
+      document.querySelectorAll('.form').forEach(f => f.style.display = "none");
+      document.getElementById(tab).style.display = "block";
+      document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add("active");
+      
+      // پاک کردن خطاها هنگام تعویض تب
+      document.getElementById("reg_error").textContent = "";
+      document.getElementById("reg_success").textContent = "";
+      document.getElementById("login_error").textContent = "";
+    }
+
+    // ثبت نام
+    async function registerUser() {
+      const name = document.getElementById("reg_name").value.trim();
+      const family = document.getElementById("reg_family").value.trim();
+      const phone = document.getElementById("reg_phone").value.trim();
+      const pass = document.getElementById("reg_pass").value.trim();
+      const errorDiv = document.getElementById("reg_error");
+      const successDiv = document.getElementById("reg_success");
+
+      errorDiv.textContent = "";
+      successDiv.textContent = "";
+
+      if (!name || !family || !phone || !pass) {
+        errorDiv.textContent = "لطفاً تمام فیلدها را پر کنید.";
+        return;
+      }
+      if (pass.length < 8) {
+        errorDiv.textContent = "رمز عبور باید حداقل ۸ کاراکتر باشد.";
+        return;
+      }
+      if (!/^09\d{9}$/.test(phone)) {
+        errorDiv.textContent = "شماره همراه باید با 09 شروع شده و 11 رقمی باشد.";
+        return;
+      }
+
+      try {
+        const response = await fetch(scriptUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `action=register&name=${encodeURIComponent(name)}&family=${encodeURIComponent(family)}&phone=${encodeURIComponent(phone)}&pass=${encodeURIComponent(pass)}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          successDiv.textContent = "ثبت‌نام با موفقیت انجام شد. حالا می‌توانید وارد شوید.";
+          // پاک کردن فیلدها پس از ثبت‌نام موفق
+          document.getElementById("reg_name").value = "";
+          document.getElementById("reg_family").value = "";
+          document.getElementById("reg_phone").value = "";
+          document.getElementById("reg_pass").value = "";
+          // نمایش تب ورود پس از 2 ثانیه
+          setTimeout(() => showTab("login"), 2000);
+        } else {
+          errorDiv.textContent = result.message || "خطا در ثبت‌نام";
+        }
+      } catch (e) {
+        errorDiv.textContent = "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.";
+        console.error("Error:", e);
+      }
+    }
+
+    // ورود
+    async function loginUser() {
+      const phone = document.getElementById("login_phone").value.trim();
+      const pass = document.getElementById("login_pass").value.trim();
+      const errorDiv = document.getElementById("login_error");
+      const loader = document.getElementById("loading");
+
+      errorDiv.textContent = "";
+      loader.style.display = "block";
+
+      if (!phone || !pass) {
+        errorDiv.textContent = "لطفا شماره همراه و رمز عبور را وارد کنید.";
+        loader.style.display = "none";
+        return;
+      }
+
+      try {
+        const response = await fetch(scriptUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `action=login&phone=${encodeURIComponent(phone)}&pass=${encodeURIComponent(pass)}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          // ذخیره اطلاعات کاربر در localStorage
+          localStorage.setItem('user', JSON.stringify(result.user));
+          // هدایت به صفحه ارزیابی
+          window.location.href = "assessment.html";
+        } else {
+          errorDiv.textContent = result.message || "شماره همراه یا رمز عبور اشتباه است.";
+        }
+      } catch (e) {
+        errorDiv.textContent = "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.";
+        console.error("Error:", e);
+      } finally {
+        loader.style.display = "none";
+      }
+    }
+
+    // بارگذاری اولیه
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('loading').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
