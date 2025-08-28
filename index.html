@@ -2,9 +2,9 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>ارزیابی</title>
+  <title>انتخاب کارخانه و ناحیه</title>
   <style>
-    body { font-family: sans-serif; text-align: center; }
+    body { font-family: sans-serif; text-align: center; direction: rtl; padding: 20px; }
     .btn { margin: 5px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
     .btn:hover { background: #0056b3; }
   </style>
@@ -15,48 +15,47 @@
   <div id="area-container"></div>
 
   <script>
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?output=csv";
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
 
     let data = [];
 
-    // خواندن داده‌ها از شیت
     async function loadData() {
-      const res = await fetch(sheetUrl);
-      const text = await res.text();
-      const rows = text.split("\n").slice(1); // حذف هدر
-      data = rows.map(r => r.split(","));
-      renderFactories();
+      try {
+        const res = await fetch(sheetUrl);
+        const text = await res.text();
+        const delimiter = text.includes(";") ? ";" : ",";
+        const rows = text.split("\n").slice(1);  // حذف هدر شیت
+        data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
+        renderFactories();
+      } catch (err) {
+        console.error("خطا در دریافت داده‌ها:", err);
+        document.body.innerHTML = "<p>خطا در بارگذاری داده‌ها. لینک CSV درست است؟</p>";
+      }
     }
 
-    // نمایش کارخانه‌ها
     function renderFactories() {
       const container = document.getElementById("factory-container");
       container.innerHTML = "";
-      const factories = [...new Set(data.map(r => r[0]))]; // ستون A
+      const factories = [...new Set(data.map(r => r[0]).filter(f => f))]; // ستون A
       factories.forEach(factory => {
-        if (factory.trim() !== "") {
-          const btn = document.createElement("button");
-          btn.className = "btn";
-          btn.textContent = factory;
-          btn.onclick = () => renderAreas(factory);
-          container.appendChild(btn);
-        }
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = factory;
+        btn.onclick = () => renderAreas(factory);
+        container.appendChild(btn);
       });
     }
 
-    // نمایش ناحیه‌ها
     function renderAreas(factory) {
       const container = document.getElementById("area-container");
-      container.innerHTML = `<h3>ناحیه‌های ${factory}</h3>`;
-      const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]))]; // ستون B
+      container.innerHTML = `<h3>ناحیه‌های کارخانه «${factory}»</h3>`;
+      const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]).filter(a => a))]; // ستون B
       areas.forEach(area => {
-        if (area.trim() !== "") {
-          const btn = document.createElement("button");
-          btn.className = "btn";
-          btn.textContent = area;
-          btn.onclick = () => alert(`اینجا باید سوالات ناحیه ${area} نمایش داده بشه`);
-          container.appendChild(btn);
-        }
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = area;
+        btn.onclick = () => alert(`ناحیه «${area}» از کارخانه «${factory}» انتخاب شد.`);
+        container.appendChild(btn);
       });
     }
 
