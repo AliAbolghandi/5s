@@ -12,7 +12,7 @@
     }
     
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       direction: rtl;
       padding: 20px;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -230,6 +230,10 @@
         width: 100%;
         margin: 5px 0;
       }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -238,7 +242,7 @@
     <header>
       <h1>سامانه ارزیابی کارخانه</h1>
       <div class="user-info">
-        <span class="user-name">کاربر: علی محمدی</span>
+        <span class="user-name" id="userName">کاربر: در حال بارگذاری...</span>
         <button class="btn btn-logout" onclick="logout()">خروج</button>
       </div>
     </header>
@@ -279,7 +283,7 @@
       window.location.href = 'login.html';
     } else {
       // نمایش نام کاربر
-      document.querySelector('.user-name').textContent = `کاربر: ${user.name} ${user.family}`;
+      document.getElementById('userName').textContent = `کاربر: ${user.name} ${user.family}`;
     }
 
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
@@ -314,6 +318,11 @@
       const container = document.getElementById("factory-container");
       container.innerHTML = "";
       const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
+      
+      if (factories.length === 0) {
+        container.innerHTML = "<p>هیچ کارخانه‌ای یافت نشد.</p>";
+        return;
+      }
       
       factories.forEach(factory => {
         const btn = document.createElement("button");
