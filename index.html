@@ -126,13 +126,17 @@
 
         if (user) {
           alert("ورود موفق ✅");
-          // ذخیره اطلاعات کاربر در localStorage
-          localStorage.setItem("user", JSON.stringify({
-            name: user[0],      // ستون نام
-            family: user[1],    // ستون نام خانوادگی
-            phone: user[2]      // ستون شماره همراه
-          }));
-          window.location.href = "assessment.html";
+          const userData = {
+            name: user[0] || "",
+            family: user[1] || "",
+            phone: user[2] || ""
+          };
+          console.log("👤 ذخیره کاربر در localStorage:", userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          setTimeout(() => {
+            window.location.href = "assessment.html";
+          }, 300);
         } else {
           errorDiv.textContent = "شماره همراه یا رمز عبور اشتباه است.";
         }
