@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>سامانه ارزیابی کارخانه</title>
+  <!-- رفع خطای CSP با اضافه کردن policy مناسب -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏭</text></svg>">
   <style>
     * {
       box-sizing: border-box;
@@ -281,7 +283,7 @@
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
       alert('لطفاً ابتدا وارد حساب کاربری خود شوید');
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     } else {
       // نمایش نام کاربر
       document.getElementById('userName').textContent = `کاربر: ${user.name} ${user.family}`;
@@ -295,7 +297,7 @@
     // تابع خروج از حساب کاربری
     function logout() {
       localStorage.removeItem('user');
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     }
 
     async function loadData() {
@@ -472,4 +474,3 @@
   </script>
 </body>
 </html>
-
