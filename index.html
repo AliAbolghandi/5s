@@ -8,16 +8,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
     
-    :root {
-      --primary: #3498db;
-      --primary-dark: #2980b9;
-      --secondary: #6c5ce7;
-      --text: #2d3436;
-      --light: #f5f6fa;
-      --error: #e84118;
-      --success: #44bd32;
-    }
-    
     * {
       margin: 0;
       padding: 0;
@@ -35,21 +25,17 @@
       padding: 20px;
     }
     
-    .container {
-      width: 100%;
-      max-width: 420px;
-      perspective: 1000px;
-    }
-    
     .form-box {
       background: white;
+      max-width: 400px;
+      width: 100%;
+      margin: 0 auto;
       padding: 30px;
       border-radius: 16px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-      transform-style: preserve-3d;
       animation: formEntrance 0.8s ease-out forwards;
       opacity: 0;
-      transform: translateY(30px) rotateX(10deg);
+      transform: translateY(30px);
     }
     
     .form-header {
@@ -58,7 +44,7 @@
     }
     
     .form-header h2 {
-      color: var(--text);
+      color: #2d3436;
       font-size: 28px;
       margin-bottom: 10px;
       position: relative;
@@ -73,14 +59,8 @@
       transform: translateX(50%);
       width: 50px;
       height: 3px;
-      background: var(--primary);
+      background: #3498db;
       border-radius: 2px;
-    }
-    
-    .form-header p {
-      color: #636e72;
-      margin-top: 15px;
-      font-size: 14px;
     }
     
     .input-group {
@@ -103,24 +83,24 @@
       border: 2px solid #ddd;
       border-radius: 10px;
       font-size: 16px;
-      color: var(--text);
+      color: #2d3436;
       transition: all 0.3s;
     }
     
     .input-group input:focus {
-      border-color: var(--primary);
+      border-color: #3498db;
       box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
       outline: none;
     }
     
     .input-group input:focus + i {
-      color: var(--primary);
+      color: #3498db;
     }
     
-    .btn {
+    button {
       width: 100%;
       padding: 15px;
-      background: var(--primary);
+      background: #3498db;
       color: white;
       border: none;
       border-radius: 10px;
@@ -133,89 +113,36 @@
       box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
     }
     
-    .btn:hover {
-      background: var(--primary-dark);
+    button:hover {
+      background: #2980b9;
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
     }
     
-    .btn:active {
+    button:active {
       transform: translateY(0);
       box-shadow: 0 3px 10px rgba(52, 152, 219, 0.4);
     }
     
-    .btn .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-      margin-left: 10px;
-      display: none;
-    }
-    
     .error {
-      color: var(--error);
+      color: #e84118;
       margin-top: 15px;
       text-align: center;
       font-size: 14px;
       padding: 10px;
       border-radius: 8px;
       background: rgba(232, 65, 24, 0.1);
-      display: none;
-      animation: shake 0.5s linear;
-    }
-    
-    .success {
-      color: var(--success);
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(68, 189, 50, 0.1);
-      display: none;
-    }
-    
-    .form-footer {
-      text-align: center;
-      margin-top: 25px;
-      font-size: 14px;
-      color: #636e72;
-    }
-    
-    .form-footer a {
-      color: var(--primary);
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-    
-    .form-footer a:hover {
-      text-decoration: underline;
     }
     
     @keyframes formEntrance {
       0% {
         opacity: 0;
-        transform: translateY(30px) rotateX(10deg);
+        transform: translateY(30px);
       }
       100% {
         opacity: 1;
-        transform: translateY(0) rotateX(0);
+        transform: translateY(0);
       }
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    @keyframes shake {
-      0%, 100% {transform: translateX(0);}
-      15%, 45%, 75% {transform: translateX(-10px);}
-      30%, 60%, 90% {transform: translateX(10px);}
     }
     
     @media (max-width: 480px) {
@@ -230,153 +157,73 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-box">
-      <div class="form-header">
-        <h2>ورود به حساب کاربری</h2>
-        <p>لطفا اطلاعات خود را برای ورود وارد کنید</p>
-      </div>
-      
-      <div class="input-group">
-        <input type="text" id="phone" placeholder="شماره موبایل">
-        <i class="fas fa-phone"></i>
-      </div>
-      
-      <div class="input-group">
-        <input type="text" id="name" placeholder="نام">
-        <i class="fas fa-user"></i>
-      </div>
-      
-      <div class="input-group">
-        <input type="text" id="family" placeholder="نام خانوادگی">
-        <i class="fas fa-users"></i>
-      </div>
-      
-      <button id="login-btn" class="btn">
-        <span>ورود به سیستم</span>
-        <div class="spinner"></div>
-      </button>
-      
-      <div id="error-msg" class="error"></div>
-      <div id="success-msg" class="success"></div>
-      
-      <div class="form-footer">
-        حساب کاربری ندارید؟ <a href="#">ثبت نام کنید</a>
-      </div>
+  <div class="form-box">
+    <div class="form-header">
+      <h2>ورود به سیستم</h2>
     </div>
+    
+    <div class="input-group">
+      <input type="text" id="phone" placeholder="شماره موبایل">
+      <i class="fas fa-phone"></i>
+    </div>
+    
+    <div class="input-group">
+      <input type="text" id="name" placeholder="نام">
+      <i class="fas fa-user"></i>
+    </div>
+    
+    <div class="input-group">
+      <input type="text" id="family" placeholder="نام خانوادگی">
+      <i class="fas fa-users"></i>
+    </div>
+    
+    <button onclick="login()">ورود</button>
+    <div id="error-msg" class="error"></div>
   </div>
 
   <script>
     const SCRIPT_URL = "🔗 اینجا لینک Google Apps Script خودت رو بذار"; 
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const loginBtn = document.getElementById('login-btn');
-      const phoneInput = document.getElementById('phone');
-      const nameInput = document.getElementById('name');
-      const familyInput = document.getElementById('family');
-      const errorDiv = document.getElementById('error-msg');
-      const successDiv = document.getElementById('success-msg');
-      const spinner = document.querySelector('.spinner');
-      const btnText = document.querySelector('.btn span');
-      
-      // افزودن اعتبارسنجی به فیلدها
-      phoneInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-      });
-      
-      nameInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^آ-یA-Za-z\s]/g, '');
-      });
-      
-      familyInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^آ-یA-Za-z\s]/g, '');
-      });
-      
-      loginBtn.addEventListener('click', login);
-      
-      // امکان استفاده از کلید Enter برای ورود
-      document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          login();
-        }
-      });
-      
-      function login() {
-        const phone = phoneInput.value.trim();
-        const name = nameInput.value.trim();
-        const family = familyInput.value.trim();
-        
-        // مخفی کردن پیام های قبلی
-        errorDiv.style.display = 'none';
-        successDiv.style.display = 'none';
-        
-        if (!phone || !name || !family) {
-          showError("لطفاً همه فیلدها را پر کنید.");
-          return;
-        }
-        
-        if (phone.length !== 11 || !phone.startsWith('09')) {
-          showError("شماره موبایل باید 11 رقمی و با 09 شروع شود.");
-          return;
-        }
-        
-        // نمایش حالت در حال پردازش
-        showLoading(true);
-        
-        // شبیه سازی ارسال درخواست به سرور
-        setTimeout(() => {
-          fetch(SCRIPT_URL + "?action=getUsers")
-            .then(res => res.json())
-            .then(data => {
-              console.log("📌 users:", data);
-              showLoading(false);
-              
-              const user = data.find(u =>
-                u.phone === phone && u.name === name && u.family === family
-              );
-              
-              if (user) {
-                showSuccess("ورود موفقیت آمیز بود! در حال انتقال...");
-                
-                // ذخیره اطلاعات در localStorage
-                localStorage.setItem("user", JSON.stringify(user));
-                
-                // انتقال به فرم ارزیابی بعد از تاخیر
-                setTimeout(() => {
-                  window.location.href = "assessment.html";
-                }, 1500);
-              } else {
-                showError("کاربری با این مشخصات یافت نشد.");
-              }
-            })
-            .catch(err => {
-              console.error("❌ خطا در بارگذاری داده‌ها:", err);
-              showLoading(false);
-              showError("خطا در اتصال به سرور. لطفاً بعداً دوباره تلاش کنید.");
-            });
-        }, 1000);
+    function login() {
+      const phone = document.getElementById("phone").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const family = document.getElementById("family").value.trim();
+      const errorDiv = document.getElementById("error-msg");
+
+      if (!phone || !name || !family) {
+        errorDiv.textContent = "لطفاً همه فیلدها را پر کنید.";
+        return;
       }
-      
-      function showError(message) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-      }
-      
-      function showSuccess(message) {
-        successDiv.textContent = message;
-        successDiv.style.display = 'block';
-      }
-      
-      function showLoading(show) {
-        if (show) {
-          spinner.style.display = 'inline-block';
-          btnText.textContent = 'در حال بررسی...';
-          loginBtn.disabled = true;
-        } else {
-          spinner.style.display = 'none';
-          btnText.textContent = 'ورود به سیستم';
-          loginBtn.disabled = false;
-        }
+
+      fetch(SCRIPT_URL + "?action=getUsers")
+        .then(res => res.json())
+        .then(data => {
+          console.log("📌 users:", data);
+
+          const user = data.find(u =>
+            u.phone === phone && u.name === name && u.family === family
+          );
+
+          if (user) {
+            // ذخیره اطلاعات در localStorage
+            localStorage.setItem("user", JSON.stringify(user));
+
+            // انتقال به فرم ارزیابی
+            window.location.href = "assessment.html";
+          } else {
+            errorDiv.textContent = "کاربری با این مشخصات یافت نشد.";
+          }
+        })
+        .catch(err => {
+          console.error("❌ خطا در بارگذاری داده‌ها:", err);
+          errorDiv.textContent = "خطا در اتصال به سرور. لطفاً بعداً دوباره تلاش کنید.";
+        });
+    }
+    
+    // افزودن قابلیت فشار دادن دکمه Enter برای ورود
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        login();
       }
     });
   </script>
