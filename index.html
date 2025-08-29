@@ -64,7 +64,7 @@
       const delimiter = text.includes(";") ? ";" : ",";
       const rows = text.split("\n").slice(1); // حذف هدر
       users = rows.map(r => r.split(delimiter).map(c => c.trim()));
-      console.log("📌 Users loaded from sheet:", users); // لاگ کامل همه کاربرا
+      console.log("📌 Users loaded from sheet:", users);
     }
 
     // ثبت نام
@@ -84,7 +84,6 @@
         return;
       }
 
-      // ارسال داده به Web App
       try {
         await fetch(scriptUrl, {
           method: "POST",
@@ -113,7 +112,6 @@
       setTimeout(() => {
         loader.style.display = "none";
 
-        // بررسی همه ردیف‌ها
         let user = null;
         for (let i = 0; i < users.length; i++) {
           console.log("🔍 Checking row:", users[i]);
@@ -128,6 +126,12 @@
 
         if (user) {
           alert("ورود موفق ✅");
+          // ذخیره اطلاعات کاربر در localStorage
+          localStorage.setItem("user", JSON.stringify({
+            name: user[0],      // ستون نام
+            family: user[1],    // ستون نام خانوادگی
+            phone: user[2]      // ستون شماره همراه
+          }));
           window.location.href = "assessment.html";
         } else {
           errorDiv.textContent = "شماره همراه یا رمز عبور اشتباه است.";
