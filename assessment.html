@@ -2,71 +2,303 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>فرم ارزیابی</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سامانه ارزیابی کارخانه</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <style>
-    body {
-      font-family: sans-serif;
-      direction: rtl;
-      margin: 20px;
-    }
-    .welcome {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-    .logout-btn {
-      background: #e74c3c;
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .logout-btn:hover {
-      background: #c0392b;
-    }
+    * { box-sizing: border-box; margin:0; padding:0 }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl; padding: 20px; background: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%); min-height:100vh; }
+    .container{ max-width:1200px; margin:0 auto; background:white; padding:25px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); }
+    header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; padding-bottom:15px; border-bottom:1px solid #eaeaea; }
+    h1{ color:#2c3e50; font-size:24px; }
+    .user-info{ display:flex; align-items:center; gap:15px; }
+    .user-name{ font-weight:600; color:#3498db; }
+    .btn{ padding:10px 20px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-size:16px; transition:all .3s; }
+    .btn:hover{ background:#0056b3; transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+    .btn-logout{ background:#e74c3c }
+    .section{ margin-bottom:30px; padding:20px; background:#f8f9fa; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+    h2{ color:#2c3e50; margin-bottom:15px; font-size:20px; }
+    .debugPanel { margin-top:10px; padding:12px; background:#fff3cd; border-radius:8px; color:#856404; font-size:14px; }
+    pre { background:#f3f3f3; padding:10px; border-radius:6px; overflow:auto; max-height:220px; }
+    /* responsive */
+    @media (max-width:768px){ .container{ padding:15px } header{ flex-direction:column; text-align:center; gap:15px } .btn-factory, .btn-area{ width:100%; margin:5px 0 } }
   </style>
 </head>
 <body>
-  <h2>فرم ارزیابی</h2>
+  <div class="container">
+    <header>
+      <h1>سامانه ارزیابی کارخانه</h1>
+      <div class="user-info">
+        <span class="user-name" id="userName">کاربر: در حال بارگذاری...</span>
+        <button class="btn btn-logout" onclick="logout()">خروج</button>
+      </div>
+    </header>
 
-  <div id="user-info"></div>
-  <button class="logout-btn" onclick="logout()">خروج از حساب</button>
+    <div id="debugArea"></div>
+
+    <div class="section">
+      <h2>انتخاب کارخانه</h2>
+      <div id="factory-container"></div>
+    </div>
+
+    <div class="section">
+      <h2>انتخاب ناحیه</h2>
+      <div id="area-container"></div>
+    </div>
+
+    <div class="section">
+      <h2>ارزیابی</h2>
+      <div id="questions-container"></div>
+    </div>
+
+    <!-- popup preview -->
+    <div id="popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+      <div style="background:white; padding:30px; border-radius:15px; width:90%; max-width:700px; max-height:80%; overflow:auto;">
+        <h3>پیش‌نمایش ارزیابی</h3>
+        <div id="summary"></div>
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:15px;">
+          <button class="btn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
+          <button class="btn btn-logout" onclick="closePopup()">انصراف</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // گرفتن اطلاعات کاربر از localStorage
-    const userStr = localStorage.getItem("user");
-    console.log("📌 user from localStorage:", userStr);
+    // تابع کمکی برای نمایش دیباگ
+    function addDebug(msg) {
+      console.log(msg);
+      const da = document.getElementById('debugArea');
+      let panel = document.getElementById('dbgPanelInner');
+      if (!panel) {
+        da.innerHTML = `<div class="debugPanel"><strong>اطلاعات دیباگ:</strong><div id="dbgPanelInner" style="margin-top:8px"></div></div>`;
+        panel = document.getElementById('dbgPanelInner');
+      }
+      panel.innerHTML += `<div style="margin-bottom:6px">${msg}</div>`;
+    }
 
-    if (!userStr) {
-      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
-      window.location.href = "index.html";
-    } else {
+    // تلاش هوشمند برای خواندن user از localStorage
+    function detectUserFromLocalStorage() {
       try {
-        const user = JSON.parse(userStr);
-        console.log("👤 کاربر لاگین‌شده:", user);
-
-        // نمایش خوشامدگویی
-        const userDiv = document.getElementById("user-info");
-        userDiv.innerHTML = `
-          <p class="welcome">
-            خوش آمدید <strong>${user.name} ${user.family}</strong>  
-            (شماره: ${user.phone})
-          </p>
-        `;
-
-      } catch (e) {
-        console.error("❌ خطا در parse کردن localStorage:", e);
-        alert("خطا در خواندن اطلاعات کاربر. دوباره وارد شوید.");
-        window.location.href = "index.html";
+        const keysToTry = ['user','User','loggedUser','currentUser'];
+        for (const k of keysToTry) {
+          const s = localStorage.getItem(k);
+          if (s) {
+            try { const obj = JSON.parse(s); return {key:k, obj}; } catch(e){}
+          }
+        }
+        // fallback: اسکن تمام کلیدها به دنبال یک JSON با فیلد name/phone/family
+        for (let i=0;i<localStorage.length;i++) {
+          const k = localStorage.key(i);
+          const s = localStorage.getItem(k);
+          if (!s) continue;
+          try {
+            const obj = JSON.parse(s);
+            if (obj && (obj.name || obj.phone || obj.family)) {
+              return { key:k, obj };
+            }
+          } catch(e){}
+        }
+        return null;
+      } catch(e) {
+        console.error(e);
+        return null;
       }
     }
 
-    // خروج کاربر
-    function logout() {
-      localStorage.removeItem("user");
-      window.location.href = "index.html";
+    // بررسی user
+    const detected = detectUserFromLocalStorage();
+    addDebug("localStorage keys: " + Array.from({length: localStorage.length}, (_,i)=>localStorage.key(i)).join(", "));
+    if (!detected) {
+      // اگر کاربر پیدا نشه، به جای ریدایرکت فوری، پنل دیباگ و دکمه بازگشت نمایش داده میشه
+      addDebug("❌ کاربر لاگین‌شده پیدا نشد در localStorage.");
+      // نمایش تمام مقادیر localStorage برای کمک به دیباگ
+      let dump = "";
+      for (let i=0;i<localStorage.length;i++) {
+        const k = localStorage.key(i);
+        dump += `${k} : ${localStorage.getItem(k)}\n\n`;
+      }
+      const da = document.getElementById('debugArea');
+      da.innerHTML += `<div style="margin-top:12px;"><p>محتوی localStorage (برای دیباگ):</p><pre>${dump}</pre>
+        <div style="margin-top:10px;">
+          <button class="btn" onclick="goToLogin()">بازگشت به صفحه ورود</button>
+          <button class="btn btn-logout" onclick="clearAndGoLogin()">پاک کردن user و بازگشت</button>
+        </div></div>`;
+      // متوقف می‌کنیم ادامه لود فرم تا کاربر مشکل رو بررسی کنه
+      function goToLogin(){ window.location.href = 'index.html'; }
+      function clearAndGoLogin(){ localStorage.removeItem('user'); window.location.href='index.html'; }
+      // expose for buttons
+      window.goToLogin = goToLogin;
+      window.clearAndGoLogin = clearAndGoLogin;
+      // متوقف: دیگر هیچ چیز اجرا نمی‌شود
+      throw new Error('User not found in localStorage — check debug area.');
+    } else {
+      const user = detected.obj;
+      addDebug(`✅ کاربر یافت شد (کلید: ${detected.key}): ${JSON.stringify(user)}`);
+      document.getElementById('userName').textContent = `کاربر: ${user.name || ''} ${user.family || ''}`;
     }
+
+    // ---------- ادامه کد فرم ارزیابی (مثل نسخه قبلی شما) ----------
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=0&single=true&output=csv";
+    let data = [];
+    let selectedFactory = "";
+    let selectedArea = "";
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(sheetUrl);
+        const text = await res.text();
+        const delimiter = text.includes(";") ? ";" : ",";
+        const rows = text.split("\n").slice(1);
+        data = rows.map(r => {
+          const cells = r.split(delimiter).map(c => c.trim());
+          return cells;
+        });
+        renderFactories();
+      } catch (error) {
+        console.error("خطا در بارگذاری داده‌ها:", error);
+        alert("خطا در بارگذاری داده‌ها. لطفا صفحه را مجددا بارگذاری کنید.");
+      }
+    }
+
+    function renderFactories() {
+      const container = document.getElementById("factory-container");
+      container.innerHTML = "";
+      const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
+      if (factories.length === 0) {
+        container.innerHTML = "<p>هیچ کارخانه‌ای یافت نشد.</p>";
+        return;
+      }
+      factories.forEach(factory => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.style.margin = "6px";
+        btn.textContent = factory;
+        btn.onclick = () => {
+          selectedFactory = factory;
+          document.querySelectorAll('#factory-container .btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          renderAreas(factory);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderAreas(factory) {
+      const container = document.getElementById("area-container");
+      const qContainer = document.getElementById("questions-container");
+      qContainer.innerHTML = "";
+      container.innerHTML = "";
+      const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]).filter(a => a))];
+      if (areas.length === 0) {
+        container.innerHTML = "<p>هیچ ناحیه‌ای برای این کارخانه تعریف نشده است.</p>";
+        return;
+      }
+      areas.forEach(area => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.style.margin = "6px";
+        btn.textContent = area;
+        btn.onclick = () => {
+          selectedArea = area;
+          document.querySelectorAll('#area-container .btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          renderQuestions(factory, area);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderQuestions(factory, area) {
+      const container = document.getElementById("questions-container");
+      container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
+      const questions = data.filter(r => r[0] === factory && r[1] === area);
+      if (questions.length === 0) {
+        container.innerHTML += "<p>هیچ سوالی برای این ناحیه تعریف نشده است.</p>";
+        return;
+      }
+      questions.forEach((row, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.style.margin = "12px 0";
+        qDiv.style.padding = "12px";
+        qDiv.style.border = "1px solid #ddd";
+        qDiv.style.borderRadius = "8px";
+        qDiv.innerHTML = `
+          <p style="margin-bottom:8px">${index + 1}. ${row[4] || 'بدون عنوان'} (وزن: ${row[5] || 1})</p>
+          <input type="number" min="0" max="5" data-weight="${row[5] || 1}" data-question="${row[4] || ''}"
+                 oninput="nextFocus(this, ${index})" placeholder="0-5" style="padding:8px; width:100px">
+        `;
+        container.appendChild(qDiv);
+      });
+
+      container.innerHTML += `
+        <div id="result" style="margin-top:12px; padding:12px; background:#d4edda; color:#155724; border-radius:8px; font-weight:bold; text-align:center;">
+          جمع امتیاز واحد: 0
+        </div>
+        <div style="text-align:center; margin-top:12px;"><button class="btn" onclick="showPopup()">ثبت ارزیابی</button></div>
+      `;
+    }
+
+    function nextFocus(input, index) {
+      if (input.value !== "" && (input.value < 0 || input.value > 5)) {
+        alert("لطفاً عددی بین ۰ تا ۵ وارد کنید");
+        input.value = "";
+        return;
+      }
+      updateResult();
+      const inputs = document.querySelectorAll("#questions-container input");
+      if (input.value !== "" && index + 1 < inputs.length) {
+        inputs[index + 1].focus();
+      }
+    }
+
+    function updateResult() {
+      const inputs = document.querySelectorAll("#questions-container input");
+      let total = 0;
+      inputs.forEach(inp => {
+        const val = parseFloat(inp.value) || 0;
+        const w = parseFloat(inp.dataset.weight) || 1;
+        total += (val * w) / 5;
+      });
+      document.getElementById("result").textContent = "جمع امتیاز واحد: " + total.toFixed(2);
+    }
+
+    function showPopup() {
+      const inputs = document.querySelectorAll("#questions-container input");
+      let allFilled = true;
+      inputs.forEach(inp => { if (!inp.value) allFilled = false; });
+      if (!allFilled) { alert("لطفاً به تمام سوالات پاسخ دهید"); return; }
+
+      let html = "<table style='width:100%; border-collapse:collapse;'><tr><th style='border:1px solid #ddd;padding:8px'>ردیف</th><th style='border:1px solid #ddd;padding:8px'>سوال</th><th style='border:1px solid #ddd;padding:8px'>امتیاز</th></tr>";
+      inputs.forEach((inp, index) => {
+        html += `<tr><td style='border:1px solid #ddd;padding:8px'>${index+1}</td><td style='border:1px solid #ddd;padding:8px'>${inp.dataset.question}</td><td style='border:1px solid #ddd;padding:8px'>${inp.value}</td></tr>`;
+      });
+      html += "</table>";
+      html += `<div style="margin-top:10px;" class="summary-total">${document.getElementById("result").textContent}</div>`;
+      document.getElementById("summary").innerHTML = html;
+      document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() { document.getElementById("popup").style.display = "none"; }
+
+    function finalSubmit() {
+      alert("ارزیابی با موفقیت ثبت شد.");
+      closePopup();
+      setTimeout(() => {
+        document.getElementById("questions-container").innerHTML = "";
+        document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('selected'));
+        selectedFactory = "";
+        selectedArea = "";
+      }, 1000);
+    }
+
+    window.onload = loadData;
   </script>
 </body>
 </html>
