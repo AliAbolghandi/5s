@@ -2,181 +2,117 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ورود کاربران</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Vazirmatn', sans-serif;
-    }
-    
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700&display=swap');
+
     body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Vazirmatn', sans-serif;
       direction: rtl;
+      margin: 0;
+      background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
+      height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      justify-content: center;
+      overflow: hidden;
     }
-    
+
     .form-box {
-      background: white;
-      max-width: 400px;
-      width: 100%;
-      margin: 0 auto;
+      width: 350px;
       padding: 30px;
+      background: white;
       border-radius: 16px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-      animation: formEntrance 0.8s ease-out forwards;
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    
-    .form-header {
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       text-align: center;
-      margin-bottom: 30px;
+      animation: fadeIn 1s ease-out;
     }
-    
-    .form-header h2 {
-      color: #2d3436;
-      font-size: 28px;
-      margin-bottom: 10px;
-      position: relative;
-      display: inline-block;
+
+    .form-box h2 {
+      margin-bottom: 20px;
+      color: #34495e;
+      font-weight: 700;
     }
-    
-    .form-header h2::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      right: 50%;
-      transform: translateX(50%);
-      width: 50px;
-      height: 3px;
-      background: #3498db;
-      border-radius: 2px;
-    }
-    
-    .input-group {
-      position: relative;
-      margin-bottom: 25px;
-    }
-    
-    .input-group i {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 15px;
-      color: #b2bec3;
-      transition: all 0.3s;
-    }
-    
-    .input-group input {
+
+    input {
       width: 100%;
-      padding: 15px 45px 15px 15px;
-      border: 2px solid #ddd;
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid #ccc;
       border-radius: 10px;
-      font-size: 16px;
-      color: #2d3436;
-      transition: all 0.3s;
-    }
-    
-    .input-group input:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
       outline: none;
+      transition: all 0.3s ease;
+      font-size: 14px;
     }
-    
-    .input-group input:focus + i {
-      color: #3498db;
+
+    input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 8px rgba(52,152,219,0.4);
+      transform: scale(1.02);
     }
-    
+
     button {
       width: 100%;
-      padding: 15px;
-      background: #3498db;
+      padding: 12px;
+      margin-top: 15px;
+      background: linear-gradient(135deg, #3498db, #2980b9);
       color: white;
       border: none;
       border-radius: 10px;
-      font-size: 16px;
-      font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
     }
-    
+
     button:hover {
-      background: #2980b9;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+      background: linear-gradient(135deg, #2980b9, #3498db);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
     }
-    
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 3px 10px rgba(52, 152, 219, 0.4);
-    }
-    
+
     .error {
-      color: #e84118;
-      margin-top: 15px;
-      text-align: center;
+      color: #e74c3c;
+      margin-top: 12px;
       font-size: 14px;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(232, 65, 24, 0.1);
+      animation: shake 0.3s;
     }
-    
-    @keyframes formEntrance {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    
-    @media (max-width: 480px) {
-      .form-box {
-        padding: 20px;
-      }
-      
-      .form-header h2 {
-        font-size: 24px;
-      }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* انیمیشن پس‌زمینه */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
+      border-radius: 50%;
+      animation: move 10s infinite alternate ease-in-out;
+    }
+
+    @keyframes move {
+      0% { top: -100px; right: -100px; }
+      100% { top: 200px; right: 200px; }
     }
   </style>
 </head>
 <body>
   <div class="form-box">
-    <div class="form-header">
-      <h2>ورود به سیستم</h2>
-    </div>
-    
-    <div class="input-group">
-      <input type="text" id="phone" placeholder="شماره موبایل">
-      <i class="fas fa-phone"></i>
-    </div>
-    
-    <div class="input-group">
-      <input type="text" id="name" placeholder="نام">
-      <i class="fas fa-user"></i>
-    </div>
-    
-    <div class="input-group">
-      <input type="text" id="family" placeholder="نام خانوادگی">
-      <i class="fas fa-users"></i>
-    </div>
-    
+    <h2>ورود</h2>
+    <input type="text" id="phone" placeholder="شماره موبایل">
+    <input type="text" id="name" placeholder="نام">
+    <input type="text" id="family" placeholder="نام خانوادگی">
     <button onclick="login()">ورود</button>
     <div id="error-msg" class="error"></div>
   </div>
@@ -205,10 +141,7 @@
           );
 
           if (user) {
-            // ذخیره اطلاعات در localStorage
             localStorage.setItem("user", JSON.stringify(user));
-
-            // انتقال به فرم ارزیابی
             window.location.href = "assessment.html";
           } else {
             errorDiv.textContent = "کاربری با این مشخصات یافت نشد.";
@@ -219,13 +152,6 @@
           errorDiv.textContent = "خطا در اتصال به سرور. لطفاً بعداً دوباره تلاش کنید.";
         });
     }
-    
-    // افزودن قابلیت فشار دادن دکمه Enter برای ورود
-    document.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        login();
-      }
-    });
   </script>
 </body>
 </html>
