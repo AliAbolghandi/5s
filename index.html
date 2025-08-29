@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>سیستم ارزیابی کارخانه - ورود</title>
   <style>
-    /* استفاده از :root برای تعیین direction و writing-mode */
     :root {
       direction: rtl;
       writing-mode: horizontal-tb;
@@ -33,7 +32,7 @@
       border-radius: 20px;
       box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       overflow: hidden;
     }
     
@@ -47,10 +46,6 @@
     .header h1 {
       font-size: 28px;
       margin-bottom: 10px;
-    }
-    
-    .header p {
-      opacity: 0.9;
     }
     
     .tabs {
@@ -150,6 +145,18 @@
       border: 1px solid #c8e6c9;
     }
     
+    .debug {
+      background: #fff3e0;
+      color: #f57c00;
+      border: 1px solid #ffe0b2;
+      font-family: monospace;
+      font-size: 12px;
+      text-align: left;
+      direction: ltr;
+      overflow: auto;
+      max-height: 150px;
+    }
+    
     .loading {
       display: none;
       text-align: center;
@@ -171,31 +178,27 @@
       100% { transform: rotate(360deg); }
     }
     
-    .footer {
+    .debug-toggle {
       text-align: center;
-      padding: 20px;
-      color: #6c757d;
-      font-size: 14px;
-      background: #f8f9fa;
-      border-top: 1px solid #e9ecef;
+      margin: 15px 0;
     }
     
-    @media (max-width: 480px) {
-      .container {
-        border-radius: 15px;
-      }
-      
-      .header {
-        padding: 20px;
-      }
-      
-      .header h1 {
-        font-size: 24px;
-      }
-      
-      .form-container {
-        padding: 20px;
-      }
+    .debug-toggle button {
+      background: transparent;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: underline;
+    }
+    
+    .debug-info {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 1px solid #e9ecef;
     }
   </style>
 </head>
@@ -259,11 +262,16 @@
         </div>
         
         <div id="login-message" class="message"></div>
+        
+        <div class="debug-toggle">
+          <button onclick="toggleDebug()">نمایش اطلاعات دیباگ</button>
+        </div>
+        
+        <div id="debug-info" class="debug-info">
+          <h3>اطلاعات دیباگ:</h3>
+          <div id="debug-content"></div>
+        </div>
       </div>
-    </div>
-    
-    <div class="footer">
-      <p>سیستم مدیریت و ارزیابی کارخانه‌ها | نسخه ۱.۰</p>
     </div>
   </div>
 
@@ -272,27 +280,23 @@
     
     // نمایش تب مورد نظر
     function showTab(tabName) {
-      // غیرفعال کردن همه تب‌ها
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.form').forEach(form => form.classList.remove('active'));
       
-      // غیرفعال کردن همه فرم‌ها
-      document.querySelectorAll('.form').forEach(form => {
-        form.classList.remove('active');
-      });
-      
-      // فعال کردن تب انتخاب شده
       document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
-      
-      // فعال کردن فرم مرتبط
       document.getElementById(`${tabName}-form`).classList.add('active');
       
       // پاک کردن پیام‌ها
+      clearMessages();
+    }
+    
+    // پاک کردن همه پیام‌ها
+    function clearMessages() {
       document.getElementById('reg-message').textContent = '';
       document.getElementById('reg-message').className = 'message';
       document.getElementById('login-message').textContent = '';
       document.getElementById('login-message').className = 'message';
+      document.getElementById('debug-content').textContent = '';
     }
     
     // ثبت نام کاربر
@@ -303,8 +307,7 @@
       const pass = document.getElementById("reg_pass").value.trim();
       const messageDiv = document.getElementById("reg-message");
 
-      messageDiv.textContent = "";
-      messageDiv.className = "message";
+      clearMessages();
 
       if (!name || !family || !phone || !pass) {
         showError(messageDiv, "لطفاً تمام فیلدها را پر کنید.");
@@ -361,9 +364,9 @@
       const pass = document.getElementById("login_pass").value.trim();
       const messageDiv = document.getElementById("login-message");
       const loader = document.getElementById("login-loading");
+      const debugContent = document.getElementById("debug-content");
 
-      messageDiv.textContent = "";
-      messageDiv.className = "message";
+      clearMessages();
       loader.style.display = "block";
 
       if (!phone || !pass) {
@@ -378,6 +381,9 @@
         formData.append('phone', phone);
         formData.append('pass', pass);
 
+        debugContent.textContent = `ارسال درخواست به: ${scriptUrl}\n`;
+        debugContent.textContent += `داده‌های ارسالی: action=login&phone=${phone}&pass=${pass}\n`;
+
         const response = await fetch(scriptUrl, {
           method: "POST",
           headers: {
@@ -388,17 +394,22 @@
         
         const result = await response.json();
         
+        debugContent.textContent += `پاسخ دریافتی: ${JSON.stringify(result, null, 2)}\n`;
+        
         if (result.status === "success") {
           showSuccess(messageDiv, "ورود موفقیت‌آمیز بود. در حال انتقال...");
-          // شبیه‌سازی انتقال به صفحه ارزیابی
+          // ذخیره اطلاعات کاربر
+          localStorage.setItem('user', JSON.stringify(result.user));
+          // انتقال به صفحه ارزیابی
           setTimeout(() => {
-            alert("ورود موفقیت‌آمیز بود. در یک سیستم واقعی به صفحه ارزیابی منتقل می‌شدید.");
+            window.location.href = "assessment.html";
           }, 1500);
         } else {
-          showError(messageDiv, result.message || "شماره همراه یا رمز عبور اشتباه است.");
+          showError(messageDiv, result.message || "شماره همراه یا رمز عبور اشتباه است");
         }
       } catch (e) {
         showError(messageDiv, "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.");
+        debugContent.textContent += `خطا: ${e.message}\n`;
         console.error("Error:", e);
       } finally {
         loader.style.display = "none";
@@ -415,6 +426,12 @@
     function showSuccess(element, message) {
       element.textContent = message;
       element.classList.add("success");
+    }
+    
+    // نمایش/مخفی کردن اطلاعات دیباگ
+    function toggleDebug() {
+      const debugInfo = document.getElementById("debug-info");
+      debugInfo.style.display = debugInfo.style.display === "none" ? "block" : "none";
     }
   </script>
 </body>
