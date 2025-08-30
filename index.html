@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="utf-8">
-  <title>ورود / ثبت‌نام</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta charset="UTF-8">
-  <title>ورود کاربران</title>
+  <title>ورود / ثبت‌نام</title>
   <style>
     body { font-family: sans-serif; direction: rtl; padding: 20px; }
     .tab { margin: 10px; padding: 10px 20px; cursor: pointer; border-radius: 5px; display: inline-block; }
@@ -17,59 +14,21 @@
     #loading { display: none; margin: 20px 0; }
     #loading img { width: 50px; }
     .error { color: red; margin-top: 10px; }
-    .debug { margin-top: 15px; font-size: 12px; color: #555; white-space: pre-wrap; background:#f3f3f3; padding:10px; border-radius:6px; }
-    body {
-      font-family: sans-serif;
-      direction: rtl;
-      margin: 20px;
-    }
-    .form-box {
-      max-width: 350px;
-      margin: 80px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    input {
-      width: 100%;
-      margin: 10px 0;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #2980b9;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
-    }
   </style>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 </head>
 <body>
   <h2>ورود یا ثبت‌نام</h2>
   <div>
     <span class="tab active" onclick="showTab('register')">ثبت‌نام</span>
     <span class="tab" onclick="showTab('login')">ورود</span>
-  <div class="form-box">
-    <h2>ورود</h2>
-    <input type="text" id="phone" placeholder="شماره موبایل">
-    <input type="text" id="name" placeholder="نام">
-    <input type="text" id="family" placeholder="نام خانوادگی">
-    <button onclick="login()">ورود</button>
-    <div id="error-msg" class="error"></div>
   </div>
 
+  <!-- ثبت نام -->
   <div id="register" class="form" style="display:block;">
     <input type="text" id="reg_name" placeholder="نام">
     <input type="text" id="reg_family" placeholder="نام خانوادگی">
@@ -79,28 +38,22 @@
     <div id="reg_error" class="error"></div>
   </div>
 
+  <!-- ورود -->
   <div id="login" class="form">
     <input type="text" id="login_phone" placeholder="شماره همراه">
     <input type="password" id="login_pass" placeholder="رمز عبور">
     <button class="btn" onclick="loginUser()">ورود</button>
-    <div id="loading"><img src="https://i.gifer.com/ZZ5H.gif" alt="loading"></div>
+    <div id="loading"><img src="https://i.gifer.com/ZZ5H.gif"></div>
     <div id="login_error" class="error"></div>
   </div>
 
-  <div id="debugBox" class="debug" style="display:none;"></div>
-
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGnfFdjRNgOIbFaYbfLhgyi0Inoo9VeEWIVvqMpk40pa18yjvcOjJauu3SZTHVHhUIQMN0TGSWBHh0/pub?gid=282182097&single=true&output=csv";
-    const scriptUrl = "YOUR_WEBAPP_URL"; // آدرس Web App (اگر استفاده می‌کنید)
-    const SCRIPT_URL = "🔗 اینجا لینک Google Apps Script خودت رو بذار"; 
+    const scriptUrl = "YOUR_WEBAPP_URL"; // آدرس Web App که توی Google Apps Script ساختی
 
-    let users = []; // آرایه آبجکت‌ها
-    function login() {
-      const phone = document.getElementById("phone").value.trim();
-      const name = document.getElementById("name").value.trim();
-      const family = document.getElementById("family").value.trim();
-      const errorDiv = document.getElementById("error-msg");
+    let users = [];
 
+    // سوئیچ بین تب‌ها
     function showTab(tab) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove("active"));
       document.querySelectorAll('.form').forEach(f => f.style.display = "none");
@@ -108,46 +61,17 @@
       document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add("active");
     }
 
-    function debug(msg) {
-      console.log(msg);
-      const el = document.getElementById('debugBox');
-      el.style.display = 'block';
-      el.textContent += msg + "\n";
-    }
-
+    // بارگذاری یوزرها از شیت
     async function loadUsers() {
-      try {
-        const res = await fetch(sheetUrl);
-        const text = await res.text();
-        // trim and normalize
-        const trimmed = text.replace(/\r/g, '').trim();
-        if (!trimmed) {
-          debug("⚠️ شیت خالی است یا دسترسی به CSV برقرار نشد.");
-          users = [];
-          return;
-        }
-        const delimiter = trimmed.includes(";") ? ";" : ",";
-        const lines = trimmed.split("\n").filter(Boolean);
-        const rawHeaders = lines[0].replace(/^\uFEFF/, ''); // remove BOM
-        const headers = rawHeaders.split(delimiter).map(h => h.trim());
-        users = lines.slice(1).map(line => {
-          const cols = line.split(delimiter).map(c => c.trim());
-          const obj = {};
-          headers.forEach((h, i) => obj[h || `col${i}`] = cols[i] || "");
-          // keep also array form for backward compatibility
-          obj._cols = cols;
-          return obj;
-        });
-        debug(`✅ بارگذاری کاربران از شیت: ${users.length} ردیف`);
-        debug("Headers: " + JSON.stringify(headers));
-        debug("نمونه ردیف اول: " + (users[0] ? JSON.stringify(users[0]) : "ندارد"));
-      } catch (e) {
-        console.error(e);
-        debug("❌ خطا در بارگذاری شیت: " + e.message);
-        users = [];
-      }
+      const res = await fetch(sheetUrl);
+      const text = await res.text();
+      const delimiter = text.includes(";") ? ";" : ",";
+      const rows = text.split("\n").slice(1); // حذف هدر
+      users = rows.map(r => r.split(delimiter).map(c => c.trim()));
+      console.log("📌 Users loaded from sheet:", users); // لاگ کامل همه کاربرا
     }
 
+    // ثبت نام
     async function registerUser() {
       const name = document.getElementById("reg_name").value.trim();
       const family = document.getElementById("reg_family").value.trim();
@@ -155,153 +79,66 @@
       const pass = document.getElementById("reg_pass").value.trim();
       const errorDiv = document.getElementById("reg_error");
 
-      errorDiv.textContent = "";
       if (!name || !family || !phone || !pass) {
         errorDiv.textContent = "همه فیلدها الزامی هستند.";
         return;
       }
       if (pass.length < 8) {
         errorDiv.textContent = "رمز عبور باید حداقل ۸ کاراکتر باشد.";
-      if (!phone || !name || !family) {
-        errorDiv.textContent = "لطفاً همه فیلدها را پر کنید.";
         return;
       }
 
+      // ارسال داده به Web App
       try {
-        // اگر WebApp دارید ارسال کنید، وگرنه می‌توانید در مرحله اول این را غیرفعال کنید.
-        if (scriptUrl && scriptUrl !== "YOUR_WEBAPP_URL") {
-          await fetch(scriptUrl, {
-            method: "POST",
-            body: JSON.stringify({ firstName: name, lastName: family, phone, password: pass }),
-            headers: { "Content-Type": "application/json" }
-          });
-        } else {
-          debug("ℹ️ آدرس WebApp تنظیم نشده. ثبت‌نام در شیت انجام نمی‌شود؛ فقط برای تست از شما اجازه گرفت.");
-        }
+        await fetch(scriptUrl, {
+          method: "POST",
+          body: JSON.stringify({ firstName: name, lastName: family, phone, password: pass }),
+          headers: { "Content-Type": "application/json" }
+        });
         alert("ثبت‌نام با موفقیت انجام شد. حالا می‌توانید وارد شوید.");
         showTab("login");
       } catch (e) {
-        console.error(e);
         errorDiv.textContent = "خطا در ارتباط با سرور.";
       }
     }
 
-    function anyCellMatches(rowObj, value) {
-      if (!value) return false;
-      value = value.trim();
-      // check all fields (including _cols array)
-      for (const k in rowObj) {
-        if (k === "_cols") continue;
-        if ((rowObj[k] || "").toString().trim() === value) return true;
-      }
-      if (Array.isArray(rowObj._cols)) {
-        for (const c of rowObj._cols) if ((c||"").toString().trim() === value) return true;
-      }
-      return false;
-    }
-
-    function pickFieldFromRow(rowObj, candidates) {
-      const keys = Object.keys(rowObj).filter(k => k !== "_cols");
-      for (const cand of candidates) {
-        const foundKey = keys.find(k => k.toLowerCase().includes(cand));
-        if (foundKey) return rowObj[foundKey] || "";
-      }
-      // fallback: return first non-empty value
-      for (const k of keys) {
-        if (rowObj[k]) return rowObj[k];
-      }
-      // fallback to first col
-      return (rowObj._cols && rowObj._cols[0]) || "";
-    }
-      fetch(SCRIPT_URL + "?action=getUsers")
-        .then(res => res.json())
-        .then(data => {
-          console.log("📌 users:", data);
-
+    // ورود
     async function loginUser() {
       const phone = document.getElementById("login_phone").value.trim();
       const pass = document.getElementById("login_pass").value.trim();
       const errorDiv = document.getElementById("login_error");
       const loader = document.getElementById("loading");
+
       errorDiv.textContent = "";
-          const user = data.find(u =>
-            u.phone === phone && u.name === name && u.family === family
-          );
-
       loader.style.display = "block";
-      await loadUsers(); // بارگذاری جدید قبل از جستجو
-          if (user) {
-            // ذخیره اطلاعات در localStorage
-            localStorage.setItem("user", JSON.stringify(user));
 
-      // کوتاه‌سازی برای تجربه کاربری
+      await loadUsers();
+
       setTimeout(() => {
         loader.style.display = "none";
 
-        let matched = null;
-        for (const r of users) {
-          if (anyCellMatches(r, phone) && anyCellMatches(r, pass)) {
-            matched = r;
+        // بررسی همه ردیف‌ها
+        let user = null;
+        for (let i = 0; i < users.length; i++) {
+          console.log("🔍 Checking row:", users[i]);
+          if (
+            users[i][2] && users[i][2].trim() === phone &&
+            users[i][3] && users[i][3].trim() === pass
+          ) {
+            user = users[i];
             break;
-            // انتقال به فرم ارزیابی
-            window.location.href = "assessment.html";
-          } else {
-            errorDiv.textContent = "کاربری با این مشخصات یافت نشد.";
           }
         }
 
-        if (!matched) {
-          debug(`🔍 کاربر پیدا نشد. تلاش برای تطبیق شماره=${phone} و رمز=****`);
-          errorDiv.textContent = "شماره همراه یا رمز عبور اشتباه است.";
-          return;
-        }
-
-        // استخراج مقادیر به شکلی مقاوم
-        const name = pickFieldFromRow(matched, ['name','نام','first','firstname','fname']);
-        const family = pickFieldFromRow(matched, ['family','نام خانوادگی','last','lastname','lname']);
-        const phoneVal = pickFieldFromRow(matched, ['phone','mobile','شماره','شماره همراه','tel']);
-
-        const userData = {
-          name: (name || "").toString(),
-          family: (family || "").toString(),
-          phone: (phoneVal || phone).toString(),
-          _raw: matched
-        };
-
-        debug("👤 یافت شد و ذخیره می‌شود در localStorage: " + JSON.stringify(userData));
-        try {
-          localStorage.setItem("user", JSON.stringify(userData));
-        } catch (e) {
-          debug("❌ خطا در ذخیره‌سازی localStorage: " + e.message);
-        }
-
-        // کمی تأخیر برای اطمینان (localStorage سینک است اما برای UI بهتر)
-        setTimeout(() => {
+        if (user) {
+          alert("ورود موفق ✅");
           window.location.href = "assessment.html";
-        }, 250);
-
-      }, 500);
-        })
-        .catch(err => {
-          console.error("❌ خطا در بارگذاری داده‌ها:", err);
-          // قبلاً alert نمایش داده میشد → الان فقط لاگ میشه
-          errorDiv.textContent = "خطا در اتصال به سرور. لطفاً بعداً دوباره تلاش کنید.";
-        });
+        } else {
+          errorDiv.textContent = "شماره همراه یا رمز عبور اشتباه است.";
+        }
+      }, 1500);
     }
 
-    // اگر قبلاً لاگین شده باشه، به صورت خودکار برود به فرم ارزیابی
-    (function redirectIfAlready() {
-      try {
-        const existing = localStorage.getItem('user');
-        if (existing) {
-          console.log('👀 کاربر در localStorage وجود دارد، انتقال به assessment.html');
-          // اگر خواستید خودکار منتقل شود، uncomment کنید:
-          // window.location.href = 'assessment.html';
-        }
-      } catch(e){}
-    })();
-
-    // بارگذاری اولیه (فقط برای پر کردن debug)
     loadUsers();
   </script>
 </body>
