@@ -2,382 +2,171 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سیستم ارزیابی کارخانه - ورود</title>
+  <title>سیستم ورود و ثبت‌نام</title>
   <style>
-    :root {
-      direction: rtl;
-      writing-mode: horizontal-tb;
-      text-orientation: mixed;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      font-family: sans-serif;
+      direction: rtl;
+      text-align: center;
+      background: #f4f6f9;
     }
-
     .container {
+      width: 350px;
+      margin: 100px auto;
       background: white;
-      border-radius: 20px;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 500px;
-      overflow: hidden;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    .header {
+    input {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
       background: #4a6bdf;
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
-    .header h1 { font-size: 28px; margin-bottom: 10px; }
-    .header p { opacity: 0.9; }
-
-    .tabs {
-      display: flex;
-      background: #f0f4ff;
-      border-bottom: 2px solid #e0e8ff;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 18px;
-      cursor: pointer;
-      font-weight: 600;
-      color: #6c757d;
-      transition: all 0.3s ease;
-    }
-    .tab.active {
-      color: #4a6bdf;
-      border-bottom: 3px solid #4a6bdf;
-      background: white;
-    }
-
-    .form-container { padding: 30px; }
-    .form { display: none; }
-    .form.active { display: block; }
-
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
-    .input-group input {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid #e0e8ff;
-      border-radius: 10px;
-      font-size: 16px;
-      transition: border-color 0.3s ease;
-    }
-    .input-group input:focus { border-color: #4a6bdf; outline: none; }
-
-    .btn {
-      width: 100%;
-      padding: 16px;
-      background: #4a6bdf;
-      color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: 600;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
       cursor: pointer;
-      transition: background 0.3s ease;
-      margin-top: 10px;
     }
-    .btn:hover { background: #3a5bc9; }
-
+    button:hover {
+      background: #3b57c5;
+    }
     .message {
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      text-align: center;
-      font-weight: 500;
+      margin-top: 10px;
+      font-size: 14px;
     }
-    .error { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; }
-    .success { background: #e8f5e9; color: #388e3c; border: 1px solid #c8e6c9; }
-
-    .debug {
-      background: #fff3e0;
-      color: #f57c00;
-      border: 1px solid #ffe0b2;
-      font-family: monospace;
-      font-size: 12px;
-      text-align: left;
-      direction: ltr;
-      overflow: auto;
-      max-height: 150px;
-    }
-
-    .loading { display: none; text-align: center; margin: 20px 0; }
     .spinner {
-      width: 50px; height: 50px;
-      border: 5px solid #f0f4ff;
-      border-top: 5px solid #4a6bdf;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    .footer {
-      text-align: center;
-      padding: 15px;
-      font-size: 14px;
-      color: #6c757d;
-      border-top: 1px solid #e9ecef;
-      background: #f8f9fa;
-    }
-
-    .debug-toggle { text-align: center; padding: 20px; margin: 15px 0; }
-    .debug-toggle button {
-      background: transparent;
-      border: none;
-      color: #6c757d;
-      cursor: pointer;
-      font-size: 14px;
-      background: #f8f9fa;
-      border-top: 1px solid #e9ecef;
-      text-decoration: underline;
-    }
-
-    .debug-info {
       display: none;
-      margin-top: 20px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      border: 1px solid #e9ecef;
+      margin: 10px auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4a6bdf;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
     }
-
-    @media (max-width: 480px) {
-      .container { border-radius: 15px; }
-      .header { padding: 20px; }
-      .header h1 { font-size: 24px; }
-      .form-container { padding: 20px; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>سامانه ارزیابی کارخانه</h1>
-      <p>برای دسترسی به سیستم، وارد حساب کاربری خود شوید</p>
-    </div>
+  <div class="container" id="login-page">
+    <h2>ورود</h2>
+    <input type="text" id="login-phone" placeholder="شماره همراه">
+    <input type="password" id="login-pass" placeholder="رمز عبور">
+    <button onclick="login()">ورود</button>
+    <div class="spinner" id="login-spinner"></div>
+    <div class="message" id="login-message"></div>
+    <p>حساب نداری؟ <a href="#" onclick="showRegister()">ثبت‌نام</a></p>
+  </div>
 
-    <div class="tabs">
-      <div class="tab active" onclick="showTab('register')">ثبت‌نام</div>
-      <div class="tab" onclick="showTab('login')">ورود</div>
-    </div>
-
-    <div class="form-container">
-      <!-- فرم ثبت‌نام -->
-      <div id="register-form" class="form active">
-        <div class="input-group">
-          <label for="reg_name">نام</label>
-          <input type="text" id="reg_name" placeholder="نام خود را وارد کنید">
-        </div>
-
-        <div class="input-group">
-          <label for="reg_family">نام خانوادگی</label>
-          <input type="text" id="reg_family" placeholder="نام خانوادگی خود را وارد کنید">
-        </div>
-
-        <div class="input-group">
-          <label for="reg_phone">شماره همراه</label>
-          <input type="tel" id="reg_phone" placeholder="09xxxxxxxxx" pattern="09[0-9]{9}">
-        </div>
-
-        <div class="input-group">
-          <label for="reg_pass">رمز عبور</label>
-          <input type="password" id="reg_pass" placeholder="حداقل ۸ کاراکتر" minlength="8">
-        </div>
-
-        <button class="btn" onclick="registerUser()">ثبت‌نام</button>
-        <div id="reg-message" class="message"></div>
-      </div>
-
-      <!-- فرم ورود -->
-      <div id="login-form" class="form">
-        <div class="input-group">
-          <label for="login_phone">شماره همراه</label>
-          <input type="tel" id="login_phone" placeholder="شماره همراه خود را وارد کنید">
-        </div>
-
-        <div class="input-group">
-          <label for="login_pass">رمز عبور</label>
-          <input type="password" id="login_pass" placeholder="رمز عبور خود را وارد کنید">
-        </div>
-
-        <button class="btn" onclick="loginUser()">ورود به سیستم</button>
-
-        <div class="loading" id="login-loading">
-          <div class="spinner"></div>
-          <p>در حال بررسی اطلاعات...</p>
-        </div>
-
-        <div id="login-message" class="message"></div>
-        
-        <div class="debug-toggle">
-          <button onclick="toggleDebug()">نمایش اطلاعات دیباگ</button>
-        </div>
-        
-        <div id="debug-info" class="debug-info">
-          <h3>اطلاعات دیباگ:</h3>
-          <div id="debug-content" class="debug"></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="footer">
-      <p>سیستم مدیریت و ارزیابی کارخانه‌ها | نسخه ۱.۰</p>
-    </div>
+  <div class="container" id="register-page" style="display:none;">
+    <h2>ثبت‌نام</h2>
+    <input type="text" id="reg-name" placeholder="نام">
+    <input type="text" id="reg-family" placeholder="نام خانوادگی">
+    <input type="text" id="reg-phone" placeholder="شماره همراه">
+    <input type="password" id="reg-pass" placeholder="رمز عبور">
+    <button onclick="register()">ثبت‌نام</button>
+    <div class="spinner" id="register-spinner"></div>
+    <div class="message" id="register-message"></div>
+    <p>حساب داری؟ <a href="#" onclick="showLogin()">ورود</a></p>
   </div>
 
   <script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxnKDz2V3c6vgl7c7PGhkyA5-yGTRdZAMbbp354Fu-wgeZNKjwXh5wNJn6AjYO6S4pi/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbYOUR_DEPLOY_ID/exec";
 
-    // نمایش تب
-    function showTab(tabName) {
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.form').forEach(form => form.classList.remove('active'));
-
-      document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
-      document.getElementById(`${tabName}-form`).classList.add('active');
-      clearMessages();
+    function showRegister() {
+      document.getElementById("login-page").style.display = "none";
+      document.getElementById("register-page").style.display = "block";
     }
 
-    // پاک کردن پیام‌ها
-    function clearMessages() {
-      document.getElementById('reg-message').textContent = '';
-      document.getElementById('reg-message').className = 'message';
-      document.getElementById('login-message').textContent = '';
-      document.getElementById('login-message').className = 'message';
-      document.getElementById('debug-content').textContent = '';
+    function showLogin() {
+      document.getElementById("register-page").style.display = "none";
+      document.getElementById("login-page").style.display = "block";
     }
 
-    // ثبت نام
-    async function registerUser() {
-      const name = document.getElementById("reg_name").value.trim();
-      const family = document.getElementById("reg_family").value.trim();
-      const phone = document.getElementById("reg_phone").value.trim();
-      const pass = document.getElementById("reg_pass").value.trim();
-      const messageDiv = document.getElementById("reg-message");
+    async function login() {
+      const phone = document.getElementById("login-phone").value;
+      const pass = document.getElementById("login-pass").value;
+      const spinner = document.getElementById("login-spinner");
+      const message = document.getElementById("login-message");
 
-      clearMessages();
-
-      if (!name || !family || !phone || !pass) {
-        showError(messageDiv, "لطفاً تمام فیلدها را پر کنید.");
-        return;
-      }
-      if (pass.length < 8) {
-        showError(messageDiv, "رمز عبور باید حداقل ۸ کاراکتر باشد.");
-        return;
-      }
-      if (!/^09\d{9}$/.test(phone)) {
-        showError(messageDiv, "شماره همراه باید با 09 شروع شده و 11 رقمی باشد.");
-        return;
-      }
+      spinner.style.display = "block";
+      message.innerText = "";
 
       try {
-        const formData = new URLSearchParams();
-        formData.append('action', 'register');
-        formData.append('name', name);
-        formData.append('family', family);
-        formData.append('phone', phone);
-        formData.append('pass', pass);
-
-        const response = await fetch(scriptUrl, {
+        const res = await fetch(scriptUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: formData
+          body: new URLSearchParams({
+            action: "login",
+            phone,
+            pass
+          })
         });
-        const result = await response.json();
-
-        if (result.status === "success") {
-          showSuccess(messageDiv, "ثبت‌نام با موفقیت انجام شد. حالا می‌توانید وارد شوید.");
-          document.getElementById("reg_name").value = "";
-          document.getElementById("reg_family").value = "";
-          document.getElementById("reg_phone").value = "";
-          document.getElementById("reg_pass").value = "";
+        const data = await res.json();
+        if (data.status === "success") {
+          message.style.color = "green";
+          message.innerText = "ورود موفقیت‌آمیز ✅";
         } else {
-          showError(messageDiv, result.message || "خطا در ثبت‌نام");
+          message.style.color = "red";
+          message.innerText = data.message;
         }
-      } catch (e) {
-        showError(messageDiv, "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.");
-        console.error("Error:", e);
-      }
-    }
-
-    // ورود
-    async function loginUser() {
-      const phone = document.getElementById("login_phone").value.trim();
-      const pass = document.getElementById("login_pass").value.trim();
-      const messageDiv = document.getElementById("login-message");
-      const loader = document.getElementById("login-loading");
-      const debugContent = document.getElementById("debug-content");
-
-      clearMessages();
-      loader.style.display = "block";
-
-      if (!phone || !pass) {
-        showError(messageDiv, "لطفا شماره همراه و رمز عبور را وارد کنید.");
-        loader.style.display = "none";
-        return;
-      }
-
-      try {
-        const formData = new URLSearchParams();
-        formData.append('action', 'login');
-        formData.append('phone', phone);
-        formData.append('pass', pass);
-
-        debugContent.textContent = `ارسال درخواست به: ${scriptUrl}\n`;
-        debugContent.textContent += `داده‌های ارسالی: action=login&phone=${phone}&pass=${pass}\n`;
-
-        const response = await fetch(scriptUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: formData
-        });
-        const result = await response.json();
-
-        debugContent.textContent += `پاسخ دریافتی: ${JSON.stringify(result, null, 2)}\n`;
-
-        if (result.status === "success") {
-          showSuccess(messageDiv, "ورود موفقیت‌آمیز بود. در حال انتقال...");
-          localStorage.setItem('user', JSON.stringify(result.user));
-          setTimeout(() => {
-            window.location.href = "assessment.html";
-          }, 1500);
-        } else {
-          showError(messageDiv, result.message || "شماره همراه یا رمز عبور اشتباه است.");
-        }
-      } catch (e) {
-        showError(messageDiv, "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.");
-        debugContent.textContent += `خطا: ${e.message}\n`;
-        console.error("Error:", e);
+      } catch (err) {
+        message.style.color = "red";
+        message.innerText = "خطا در ارتباط با سرور!";
       } finally {
-        loader.style.display = "none";
+        spinner.style.display = "none";
       }
     }
 
-    function showError(element, message) {
-      element.textContent = message;
-      element.classList.add("error");
-    }
-    function showSuccess(element, message) {
-      element.textContent = message;
-      element.classList.add("success");
-    }
-    function toggleDebug() {
-      const debugInfo = document.getElementById("debug-info");
-      debugInfo.style.display = debugInfo.style.display === "none" ? "block" : "none";
+    async function register() {
+      const name = document.getElementById("reg-name").value;
+      const family = document.getElementById("reg-family").value;
+      const phone = document.getElementById("reg-phone").value;
+      const pass = document.getElementById("reg-pass").value;
+      const spinner = document.getElementById("register-spinner");
+      const message = document.getElementById("register-message");
+
+      spinner.style.display = "block";
+      message.innerText = "";
+
+      try {
+        const res = await fetch(scriptUrl, {
+          method: "POST",
+          body: new URLSearchParams({
+            action: "register",
+            name,
+            family,
+            phone,
+            pass
+          })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          message.style.color = "green";
+          message.innerText = "ثبت‌نام موفقیت‌آمیز ✅";
+        } else {
+          message.style.color = "red";
+          message.innerText = data.message;
+        }
+      } catch (err) {
+        message.style.color = "red";
+        message.innerText = "خطا در ارتباط با سرور!";
+      } finally {
+        spinner.style.display = "none";
+      }
     }
   </script>
 </body>
