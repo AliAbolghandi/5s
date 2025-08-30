@@ -2,112 +2,84 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>سیستم ورود و ثبت‌نام</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت نام و ورود</title>
   <style>
     body {
-      font-family: sans-serif;
-      direction: rtl;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background: #f4f6f9;
+      margin: 50px;
     }
-    .container {
-      width: 350px;
-      margin: 100px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    input {
-      display: block;
-      width: 90%;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    button {
-      width: 95%;
-      padding: 10px;
-      margin: 10px 0;
-      background: #4a6bdf;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #3b57c5;
-    }
-    .message {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .spinner {
+    .form-container {
       display: none;
-      margin: 10px auto;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #4a6bdf;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      animation: spin 1s linear infinite;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .active {
+      display: block;
+    }
+    .loading {
+      display: none;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="login-page">
-    <h2>ورود</h2>
-    <input type="text" id="login-phone" placeholder="شماره همراه">
-    <input type="password" id="login-pass" placeholder="رمز عبور">
-    <button onclick="login()">ورود</button>
-    <div class="spinner" id="login-spinner"></div>
-    <div class="message" id="login-message"></div>
-    <p>حساب نداری؟ <a href="#" onclick="showRegister()">ثبت‌نام</a></p>
+
+  <h2>سامانه ثبت نام و ورود</h2>
+
+  <!-- فرم ورود -->
+  <div id="loginForm" class="form-container active">
+    <h3>ورود</h3>
+    <form onsubmit="loginUser(event)">
+      <input type="text" id="loginPhone" placeholder="شماره همراه" required><br><br>
+      <input type="password" id="loginPass" placeholder="رمز عبور" required><br><br>
+      <button type="submit">ورود</button>
+    </form>
+    <p><a href="#" onclick="showRegister()">ثبت نام</a></p>
   </div>
 
-  <div class="container" id="register-page" style="display:none;">
-    <h2>ثبت‌نام</h2>
-    <input type="text" id="reg-name" placeholder="نام">
-    <input type="text" id="reg-family" placeholder="نام خانوادگی">
-    <input type="text" id="reg-phone" placeholder="شماره همراه">
-    <input type="password" id="reg-pass" placeholder="رمز عبور">
-    <button onclick="register()">ثبت‌نام</button>
-    <div class="spinner" id="register-spinner"></div>
-    <div class="message" id="register-message"></div>
-    <p>حساب داری؟ <a href="#" onclick="showLogin()">ورود</a></p>
+  <!-- فرم ثبت‌نام -->
+  <div id="registerForm" class="form-container">
+    <h3>ثبت نام</h3>
+    <form onsubmit="registerUser(event)">
+      <input type="text" id="regName" placeholder="نام" required><br><br>
+      <input type="text" id="regFamily" placeholder="نام خانوادگی" required><br><br>
+      <input type="text" id="regPhone" placeholder="شماره همراه" required><br><br>
+      <input type="password" id="regPass" placeholder="رمز عبور" required><br><br>
+      <button type="submit">ثبت نام</button>
+    </form>
+    <p><a href="#" onclick="showLogin()">ورود</a></p>
+  </div>
+
+  <!-- لودینگ مشترک -->
+  <div id="loading" class="loading">
+    <p>در حال پردازش...</p>
   </div>
 
   <script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbYOUR_DEPLOY_ID/exec";
+    const scriptUrl = "YOUR_SCRIPT_URL"; // اینجا لینک WebApp گوگل اسکریپت رو بذار
 
     function showRegister() {
-      document.getElementById("login-page").style.display = "none";
-      document.getElementById("register-page").style.display = "block";
+      document.getElementById("loginForm").classList.remove("active");
+      document.getElementById("registerForm").classList.add("active");
     }
 
     function showLogin() {
-      document.getElementById("register-page").style.display = "none";
-      document.getElementById("login-page").style.display = "block";
+      document.getElementById("registerForm").classList.remove("active");
+      document.getElementById("loginForm").classList.add("active");
     }
 
-    async function login() {
-      const phone = document.getElementById("login-phone").value;
-      const pass = document.getElementById("login-pass").value;
-      const spinner = document.getElementById("login-spinner");
-      const message = document.getElementById("login-message");
+    // ورود
+    async function loginUser(event) {
+      event.preventDefault();
 
-      spinner.style.display = "block";
-      message.innerText = "";
+      const phone = document.getElementById("loginPhone").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+      const loading = document.getElementById("loading");
 
       try {
-        const res = await fetch(scriptUrl, {
+        loading.style.display = "block";
+
+        const response = await fetch(scriptUrl, {
           method: "POST",
           body: new URLSearchParams({
             action: "login",
@@ -115,35 +87,35 @@
             pass
           })
         });
-        const data = await res.json();
-        if (data.status === "success") {
-          message.style.color = "green";
-          message.innerText = "ورود موفقیت‌آمیز ✅";
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          alert("خوش آمدید " + result.user.name + " " + result.user.family);
         } else {
-          message.style.color = "red";
-          message.innerText = data.message;
+          alert(result.message);
         }
-      } catch (err) {
-        message.style.color = "red";
-        message.innerText = "خطا در ارتباط با سرور!";
+      } catch (error) {
+        alert("خطا در ارتباط با سرور: " + error.message);
       } finally {
-        spinner.style.display = "none";
+        loading.style.display = "none";
       }
     }
 
-    async function register() {
-      const name = document.getElementById("reg-name").value;
-      const family = document.getElementById("reg-family").value;
-      const phone = document.getElementById("reg-phone").value;
-      const pass = document.getElementById("reg-pass").value;
-      const spinner = document.getElementById("register-spinner");
-      const message = document.getElementById("register-message");
+    // ثبت‌نام
+    async function registerUser(event) {
+      event.preventDefault();
 
-      spinner.style.display = "block";
-      message.innerText = "";
+      const name = document.getElementById("regName").value.trim();
+      const family = document.getElementById("regFamily").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      const pass = document.getElementById("regPass").value.trim();
+      const loading = document.getElementById("loading");
 
       try {
-        const res = await fetch(scriptUrl, {
+        loading.style.display = "block";
+
+        const response = await fetch(scriptUrl, {
           method: "POST",
           body: new URLSearchParams({
             action: "register",
@@ -153,19 +125,20 @@
             pass
           })
         });
-        const data = await res.json();
-        if (data.status === "success") {
-          message.style.color = "green";
-          message.innerText = "ثبت‌نام موفقیت‌آمیز ✅";
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          alert(result.message);
+          document.getElementById("registerForm").reset();
+          showLogin();
         } else {
-          message.style.color = "red";
-          message.innerText = data.message;
+          alert(result.message);
         }
-      } catch (err) {
-        message.style.color = "red";
-        message.innerText = "خطا در ارتباط با سرور!";
+      } catch (error) {
+        alert("خطا در ارتباط با سرور: " + error.message);
       } finally {
-        spinner.style.display = "none";
+        loading.style.display = "none";
       }
     }
   </script>
