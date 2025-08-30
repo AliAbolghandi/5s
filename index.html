@@ -1,157 +1,418 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>ورود کاربران</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700&display=swap');
-
-    body {
-      font-family: 'Vazirmatn', sans-serif;
-      direction: rtl;
-      margin: 0;
-      background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .form-box {
-      width: 350px;
-      padding: 30px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      text-align: center;
-      animation: fadeIn 1s ease-out;
-    }
-
-    .form-box h2 {
-      margin-bottom: 20px;
-      color: #34495e;
-      font-weight: 700;
-    }
-
-    input {
-      width: 100%;
-      margin: 12px 0;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      outline: none;
-      transition: all 0.3s ease;
-      font-size: 14px;
-    }
-
-    input:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 8px rgba(52,152,219,0.4);
-      transform: scale(1.02);
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      background: linear-gradient(135deg, #3498db, #2980b9);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      background: linear-gradient(135deg, #2980b9, #3498db);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    }
-
-    .error {
-      color: #e74c3c;
-      margin-top: 12px;
-      font-size: 14px;
-      animation: shake 0.3s;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
-    }
-
-    /* انیمیشن پس‌زمینه */
-    body::before {
-      content: "";
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
-      border-radius: 50%;
-      animation: move 10s infinite alternate ease-in-out;
-    }
-
-    @keyframes move {
-      0% { top: -100px; right: -100px; }
-      100% { top: 200px; right: 200px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم ثبت نام و ورود</title>
+    <link rel="stylesheet" href="https://cdn.fontcdn.ir/Font/Persian/IRANSans/IRANSans.css">
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'IRANSans', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0e2a 0%, #1a237e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(13, 17, 60, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: #4fc3f7;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #bbdefb;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #283593;
+            border-radius: 10px;
+            background: rgba(13, 17, 60, 0.7);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+        
+        input::placeholder {
+            color: #9fa8da;
+        }
+        
+        .error {
+            color: #ff5252;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: linear-gradient(45deg, #1976d2, #1565c0);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 25px;
+            color: #bbdefb;
+        }
+        
+        .switch-form a {
+            color: #4fc3f7;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        
+        .switch-form a:hover {
+            color: #29b6f6;
+            text-decoration: underline;
+        }
+        
+        .form-container {
+            display: none;
+        }
+        
+        #login-form {
+            display: block;
+        }
+        
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo span {
+            font-size: 36px;
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #4fc3f7;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <div class="form-box">
-    <h2>ورود</h2>
-    <input type="text" id="phone" placeholder="شماره موبایل">
-    <input type="text" id="name" placeholder="نام">
-    <input type="text" id="family" placeholder="نام خانوادگی">
-    <button onclick="login()">ورود</button>
-    <div id="error-msg" class="error"></div>
-  </div>
+    <div class="container">
+        <div class="logo">
+            <span>نEX</span>
+        </div>
+        
+        <div id="login-form" class="form-container">
+            <h1>ورود به سیستم</h1>
+            <div class="success-message" id="login-success">
+                ثبت نام شما با موفقیت انجام شد. اکنون می‌توانید وارد شوید.
+            </div>
+            <div class="form-group">
+                <label for="login-mobile">شماره همراه</label>
+                <input type="tel" id="login-mobile" placeholder="09*********" pattern="09[0-9]{9}" required>
+                <div class="error" id="login-mobile-error">لطفا شماره همراه معتبر وارد کنید</div>
+            </div>
+            <div class="form-group">
+                <label for="login-password">رمز عبور</label>
+                <input type="password" id="login-password" placeholder="رمز عبور خود را وارد کنید" required>
+                <div class="error" id="login-password-error">لطفا رمز عبور خود را وارد کنید</div>
+            </div>
+            <button type="button" id="login-btn">ورود</button>
+            
+            <div class="switch-form">
+                ثبت نام نکرده‌اید؟ <a href="#" id="go-to-register">ثبت نام</a>
+            </div>
+        </div>
+        
+        <div id="register-form" class="form-container">
+            <h1>ثبت نام کاربر جدید</h1>
+            <div class="success-message" id="register-success">
+                ثبت نام با موفقیت انجام شد!
+            </div>
+            <div class="error-message" id="register-error">
+                خطایی در ثبت اطلاعات رخ داد. لطفا مجددا تلاش کنید.
+            </div>
+            <div class="form-group">
+                <label for="first-name">نام</label>
+                <input type="text" id="first-name" placeholder="نام خود را وارد کنید" required>
+                <div class="error" id="first-name-error">لطفا نام خود را وارد کنید</div>
+            </div>
+            <div class="form-group">
+                <label for="last-name">نام خانوادگی</label>
+                <input type="text" id="last-name" placeholder="نام خانوادگی خود را وارد کنید" required>
+                <div class="error" id="last-name-error">لطفا نام خانوادگی خود را وارد کنید</div>
+            </div>
+            <div class="form-group">
+                <label for="register-mobile">شماره همراه</label>
+                <input type="tel" id="register-mobile" placeholder="09*********" pattern="09[0-9]{9}" required>
+                <div class="error" id="register-mobile-error">لطفا شماره همراه معتبر وارد کنید</div>
+            </div>
+            <div class="form-group">
+                <label for="register-password">رمز عبور (حداقل 8 کاراکتر)</label>
+                <input type="password" id="register-password" placeholder="رمز عبور خود را وارد کنید" minlength="8" required>
+                <div class="error" id="register-password-error">رمز عبور باید حداقل 8 کاراکتر داشته باشد</div>
+            </div>
+            <button type="button" id="register-btn">ثبت نام</button>
+            <div class="loading" id="register-loading">
+                <div class="loading-spinner"></div>
+                <p>در حال ثبت اطلاعات...</p>
+            </div>
+            
+            <div class="switch-form">
+                قبلا ثبت نام کرده‌اید؟ <a href="#" id="go-to-login">ورود</a>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    const SCRIPT_URL = "🔗 اینجا لینک Google Apps Script خودت رو بذار"; 
-
-    function login() {
-      const phone = document.getElementById("phone").value.trim();
-      const name = document.getElementById("name").value.trim();
-      const family = document.getElementById("family").value.trim();
-      const errorDiv = document.getElementById("error-msg");
-
-      if (!phone || !name || !family) {
-        errorDiv.textContent = "لطفاً همه فیلدها را پر کنید.";
-        return;
-      }
-
-      fetch(SCRIPT_URL + "?action=getUsers")
-        .then(res => res.json())
-        .then(data => {
-          console.log("📌 users:", data);
-
-          const user = data.find(u =>
-            u.phone === phone && u.name === name && u.family === family
-          );
-
-          if (user) {
-            localStorage.setItem("user", JSON.stringify(user));
-            window.location.href = "assessment.html";
-          } else {
-            errorDiv.textContent = "کاربری با این مشخصات یافت نشد.";
-          }
-        })
-        .catch(err => {
-          console.error("❌ خطا در بارگذاری داده‌ها:", err);
-          errorDiv.textContent = "خطا در اتصال به سرور. لطفاً بعداً دوباره تلاش کنید.";
+    <script>
+        // عناصر DOM
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const goToRegisterBtn = document.getElementById('go-to-register');
+        const goToLoginBtn = document.getElementById('go-to-login');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const loginSuccess = document.getElementById('login-success');
+        const registerSuccess = document.getElementById('register-success');
+        const registerError = document.getElementById('register-error');
+        const registerLoading = document.getElementById('register-loading');
+        
+        // تغییر بین فرم‌ها
+        goToRegisterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerSuccess.style.display = 'none';
+            registerError.style.display = 'none';
         });
-    }
-  </script>
+        
+        goToLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        // اعتبارسنجی فرم ورود
+        loginBtn.addEventListener('click', function() {
+            let isValid = true;
+            const mobile = document.getElementById('login-mobile');
+            const password = document.getElementById('login-password');
+            const mobileError = document.getElementById('login-mobile-error');
+            const passwordError = document.getElementById('login-password-error');
+            
+            // پاک کردن خطاهای قبلی
+            mobileError.style.display = 'none';
+            passwordError.style.display = 'none';
+            
+            // اعتبارسنجی شماره همراه
+            if (!mobile.value || !mobile.checkValidity()) {
+                mobileError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // اعتبارسنجی رمز عبور
+            if (!password.value) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // در اینجا می‌توانید اطلاعات را به سرور ارسال کنید
+                alert('ورود با موفقیت انجام شد!');
+            }
+        });
+        
+        // اعتبارسنجی و ارسال فرم ثبت نام
+        registerBtn.addEventListener('click', function() {
+            let isValid = true;
+            const firstName = document.getElementById('first-name');
+            const lastName = document.getElementById('last-name');
+            const mobile = document.getElementById('register-mobile');
+            const password = document.getElementById('register-password');
+            const firstNameError = document.getElementById('first-name-error');
+            const lastNameError = document.getElementById('last-name-error');
+            const mobileError = document.getElementById('register-mobile-error');
+            const passwordError = document.getElementById('register-password-error');
+            
+            // پاک کردن خطاهای قبلی و پیام‌ها
+            firstNameError.style.display = 'none';
+            lastNameError.style.display = 'none';
+            mobileError.style.display = 'none';
+            passwordError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+            registerError.style.display = 'none';
+            
+            // اعتبارسنجی نام
+            if (!firstName.value) {
+                firstNameError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // اعتبارسنجی نام خانوادگی
+            if (!lastName.value) {
+                lastNameError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // اعتبارسنجی شماره همراه
+            if (!mobile.value || !mobile.checkValidity()) {
+                mobileError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // اعتبارسنجی رمز عبور
+            if (!password.value || password.value.length < 8) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // نمایش loading
+                registerLoading.style.display = 'block';
+                
+                // دریافت تاریخ شمسی
+                const now = new Date();
+                const jalaliDate = jalaali.toJalaali(now);
+                const persianDate = `${jalaliDate.jy}/${jalaliDate.jm}/${jalaliDate.jd}`;
+                
+                // آماده کردن داده‌ها برای ارسال
+                const formData = {
+                    firstName: encodeURIComponent(firstName.value),
+                    lastName: encodeURIComponent(lastName.value),
+                    mobile: encodeURIComponent(mobile.value),
+                    password: encodeURIComponent(password.value),
+                    date: encodeURIComponent(persianDate)
+                };
+                
+                // ایجاد URL برای درخواست GET
+                const baseURL = 'https://script.google.com/macros/s/AKfycbxZcJwUDJ7XUS_BPTyPQ-AUtaa-OGzlztCZ11TgM0SX36DLbM06Q-WCOMYXIvSQ3OcG/exec';
+                const queryString = `?firstName=${formData.firstName}&lastName=${formData.lastName}&mobile=${formData.mobile}&password=${formData.password}&date=${formData.date}`;
+                const requestURL = baseURL + queryString;
+                
+                // ارسال داده‌ها به Google Sheets با استفاده از GET
+                fetch(requestURL, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                })
+                .then(() => {
+                    // مخفی کردن loading
+                    registerLoading.style.display = 'none';
+                    
+                    // نمایش پیام موفقیت
+                    registerSuccess.style.display = 'block';
+                    
+                    // پاک کردن فرم
+                    firstName.value = '';
+                    lastName.value = '';
+                    mobile.value = '';
+                    password.value = '';
+                    
+                    // پس از 2 ثانیه بازگشت به صفحه ورود
+                    setTimeout(() => {
+                        registerForm.style.display = 'none';
+                        loginForm.style.display = 'block';
+                        loginSuccess.style.display = 'block';
+                        
+                        // پر کردن خودکار شماره همراه در فرم ورود
+                        document.getElementById('login-mobile').value = decodeURIComponent(formData.mobile);
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // مخفی کردن loading
+                    registerLoading.style.display = 'none';
+                    
+                    // نمایش پیام خطا
+                    registerError.style.display = 'block';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
