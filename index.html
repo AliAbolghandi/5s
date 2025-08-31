@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سیستم ارزیابی کارخانه - ورود</title>
+  <title> سامانه ارزیابی 5S فمجتمع فولاد روهینا</title>
   <style>
     :root {
       direction: rtl;
@@ -14,7 +14,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI',Yekan, Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       display: flex;
       justify-content: center;
@@ -199,6 +199,12 @@
         </div>
 
         <button class="btn" onclick="registerUser()">ثبت‌نام</button>
+
+        <div class="loading" id="register-loading">
+          <div class="spinner"></div>
+          <p>در حال ارسال اطلاعات...</p>
+        </div>
+
         <div id="reg-message" class="message"></div>
       </div>
 
@@ -222,11 +228,7 @@
         </div>
 
         <div id="login-message" class="message"></div>
-        
-        <div class="debug-toggle">
-          <button onclick="toggleDebug()">نمایش اطلاعات دیباگ</button>
-        </div>
-        
+
         <div id="debug-info" class="debug-info">
           <h3>اطلاعات دیباگ:</h3>
           <div id="debug-content" class="debug"></div>
@@ -240,7 +242,8 @@
   </div>
 
   <script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxnKDz2V3c6vgl7c7PGhkyA5-yGTRdZAMbbp354Fu-wgeZNKjwXh5wNJn6AjYO6S4pi/exec";
+    //const scriptUrl = "https://script.google.com/macros/s/AKfycbxnKDz2V3c6vgl7c7PGhkyA5-yGTRdZAMbbp354Fu-wgeZNKjwXh5wNJn6AjYO6S4pi/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbz3PE3W4x7YgLqPAp28dwyOoWkJ4XGe82j0m8taYwkOk92J6E47vc9I5wyF_T5pXWA/exec";
 
     // نمایش تب
     function showTab(tabName) {
@@ -268,40 +271,45 @@
       const phone = document.getElementById("reg_phone").value.trim();
       const pass = document.getElementById("reg_pass").value.trim();
       const messageDiv = document.getElementById("reg-message");
+      const loader = document.getElementById("register-loading");
 
       clearMessages();
+      loader.style.display = "block";  // ✅ نمایش لودینگ
 
       if (!name || !family || !phone || !pass) {
-        showError(messageDiv, "لطفاً تمام فیلدها را پر کنید.");
-        return;
+       showError(messageDiv, "لطفاً تمام فیلدها را پر کنید.");
+        loader.style.display = "none"; // ❌ اگر خطا بود، لودینگ خاموش بشه
+       return;
       }
-      if (pass.length < 8) {
+     if (pass.length < 8) {
         showError(messageDiv, "رمز عبور باید حداقل ۸ کاراکتر باشد.");
+        loader.style.display = "none";
         return;
       }
       if (!/^09\d{9}$/.test(phone)) {
         showError(messageDiv, "شماره همراه باید با 09 شروع شده و 11 رقمی باشد.");
+        loader.style.display = "none";
         return;
-      }
+     }
 
       try {
         const formData = new URLSearchParams();
         formData.append('action', 'register');
         formData.append('name', name);
-        formData.append('family', family);
+       formData.append('family', family);
         formData.append('phone', phone);
         formData.append('pass', pass);
 
         const response = await fetch(scriptUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: formData
+         method: "POST",
+         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+         body: formData
         });
-        const result = await response.json();
+       const result = await response.json();
 
-        if (result.status === "success") {
-          showSuccess(messageDiv, "ثبت‌نام با موفقیت انجام شد. حالا می‌توانید وارد شوید.");
-          document.getElementById("reg_name").value = "";
+       if (result.status === "success") {
+         showSuccess(messageDiv, "ثبت‌نام با موفقیت انجام شد. حالا می‌توانید وارد شوید.");
+         document.getElementById("reg_name").value = "";
           document.getElementById("reg_family").value = "";
           document.getElementById("reg_phone").value = "";
           document.getElementById("reg_pass").value = "";
@@ -310,11 +318,13 @@
         }
       } catch (e) {
         showError(messageDiv, "خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.");
-        console.error("Error:", e);
+       console.error("Error:", e);
+      } finally {
+       loader.style.display = "none"; // ✅ در هر حالت لودینگ خاموش بشه
       }
     }
 
-    // ورود
+    // ورود (اصلاح شده)
     async function loginUser() {
       const phone = document.getElementById("login_phone").value.trim();
       const pass = document.getElementById("login_pass").value.trim();
@@ -343,7 +353,7 @@
         const response = await fetch(scriptUrl, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: formData
+          body: formData.toString()   // ✅ اصلاح شد
         });
         const result = await response.json();
 
