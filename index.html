@@ -1,155 +1,355 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سامانه ارزیابی 5S</title>
+  <title>فرم ثبت اطلاعات مدرن</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@4.0.0-alpha.28/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Tahoma, sans-serif; background: #f0f4ff; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-    .container { background:white; padding:30px; border-radius:15px; width:100%; max-width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.1);}
-    h2 { text-align:center; margin-bottom:20px; }
-    .input-group { margin-bottom:15px; }
-    .input-group input { width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; }
-    .btn { width:100%; padding:12px; background:#4a6bdf; color:white; border:none; border-radius:5px; cursor:pointer; }
-    .message { text-align:center; margin-top:10px; font-weight:500; }
-    .success { color:green; }
-    .error { color:red; }
-    .tabs { display:flex; margin-bottom:20px; }
-    .tab { flex:1; text-align:center; padding:10px; cursor:pointer; border-bottom:2px solid #ccc; }
-    .tab.active { border-bottom:2px solid #4a6bdf; font-weight:bold; color:#4a6bdf; }
-    .form { display:none; }
-    .form.active { display:block; }
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #06d6a0;
+      --danger: #ef476f;
+      --warning: #ffd166;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Vazirmatn", "Vazir", Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: var(--dark);
+    }
+
+    .container {
+      background: white;
+      padding: 35px 30px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .container:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo {
+      margin-bottom: 25px;
+    }
+
+    .logo i {
+      font-size: 42px;
+      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: var(--dark);
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 50%;
+      transform: translateX(50%);
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      border-radius: 3px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 45px 16px 20px;
+      border-radius: var(--border-radius);
+      border: 1px solid #e2e8f0;
+      font-size: 16px;
+      outline: none;
+      text-align: right;
+      transition: var(--transition);
+      background-color: var(--light);
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      transition: var(--transition);
+    }
+
+    input:focus + .input-icon {
+      color: var(--primary);
+    }
+
+    .password-toggle {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--gray);
+      transition: var(--transition);
+      z-index: 2;
+    }
+
+    input:focus ~ .password-toggle {
+      color: var(--primary);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.25);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #651a98);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(67, 97, 238, 0.35);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+
+    .loading {
+      display: none;
+      margin-top: 20px;
+      color: var(--gray);
+      font-size: 14px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+      
+      input {
+        padding: 14px 40px 14px 15px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h2>سامانه ارزیابی کارخانه</h2>
+    <div class="logo">
+      <i class="fas fa-user-edit"></i>
+    </div>
+    <h2>ثبت اطلاعات کاربری</h2>
     
-    <div class="tabs">
-      <div class="tab active" onclick="showTab('login')">ورود</div>
-      <div class="tab" onclick="showTab('register')">ثبت‌نام</div>
+    <div class="input-group">
+      <input type="text" id="tbxName" placeholder="نام">
+      <i class="input-icon fas fa-user"></i>
+    </div>
+    
+    <div class="input-group">
+      <input type="text" id="tbxFamily" placeholder="نام خانوادگی">
+      <i class="input-icon fas fa-users"></i>
+    </div>
+    
+    <div class="input-group">
+      <input type="text" id="tbxPhone" placeholder="شماره همراه (09xxxxxxxxx)" pattern="09[0-9]{9}">
+      <i class="input-icon fas fa-phone"></i>
+    </div>
+    
+    <div class="input-group">
+      <input type="password" id="tbxPass" placeholder="رمز عبور">
+      <i class="input-icon fas fa-lock"></i>
+      <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
+    </div>
+    
+    <button onclick="submitData()">ثبت اطلاعات</button>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <span>در حال ثبت اطلاعات...</span>
     </div>
 
-    <!-- فرم ورود -->
-    <div id="login" class="form active">
-      <div class="input-group">
-        <input type="tel" id="login_phone" placeholder="شماره همراه">
-      </div>
-      <div class="input-group">
-        <input type="password" id="login_pass" placeholder="رمز عبور">
-      </div>
-      <button class="btn" onclick="loginUser()">ورود</button>
-      <div id="login-message" class="message"></div>
-    </div>
-
-    <!-- فرم ثبت‌نام -->
-    <div id="register" class="form">
-      <div class="input-group">
-        <input type="text" id="reg_name" placeholder="نام">
-      </div>
-      <div class="input-group">
-        <input type="text" id="reg_family" placeholder="نام خانوادگی">
-      </div>
-      <div class="input-group">
-        <input type="tel" id="reg_phone" placeholder="شماره همراه">
-      </div>
-      <div class="input-group">
-        <input type="password" id="reg_pass" placeholder="رمز عبور">
-      </div>
-      <button class="btn" onclick="registerUser()">ثبت‌نام</button>
-      <div id="reg-message" class="message"></div>
+    <p id="status"></p>
+    
+    <div class="footer">
+      اطلاعات شما با امنیت کامل ثبت خواهد شد
     </div>
   </div>
 
-<script>
-const scriptUrl = "https://script.google.com/macros/s/YOUR_WEB_APP_ID/exec";
-
-function showTab(tabName){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
-  document.getElementById(tabName).classList.add('active');
-  document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
-  document.getElementById('login-message').textContent='';
-  document.getElementById('reg-message').textContent='';
-}
-
-// ثبت‌نام
-async function registerUser(){
-  const name=document.getElementById('reg_name').value.trim();
-  const family=document.getElementById('reg_family').value.trim();
-  const phone=document.getElementById('reg_phone').value.trim();
-  const pass=document.getElementById('reg_pass').value.trim();
-  const msg=document.getElementById('reg-message');
-
-  if(!name||!family||!phone||!pass){ msg.textContent='تمام فیلدها الزامی هستند.'; msg.className='message error'; return;}
-
-  const formData=new URLSearchParams();
-  formData.append('action','register');
-  formData.append('reg_name',name);
-  formData.append('reg_family',family);
-  formData.append('reg_phone',phone);
-  formData.append('reg_pass',pass);
-
-  try{
-    const response=await fetch(scriptUrl,{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-      body:formData
-    });
-    const result=await response.json();
-    if(result.status==='success'){
-      msg.textContent='ثبت‌نام موفقیت‌آمیز بود!';
-      msg.className='message success';
-      document.getElementById('reg_name').value='';
-      document.getElementById('reg_family').value='';
-      document.getElementById('reg_phone').value='';
-      document.getElementById('reg_pass').value='';
-    }else{
-      msg.textContent=result.message;
-      msg.className='message error';
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('tbxPass');
+      const toggleIcon = document.querySelector('.password-toggle');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
     }
-  }catch(e){
-    msg.textContent='خطا در ارتباط با سرور.';
-    msg.className='message error';
-    console.error(e);
-  }
-}
 
-// ورود
-async function loginUser(){
-  const phone=document.getElementById('login_phone').value.trim();
-  const pass=document.getElementById('login_pass').value.trim();
-  const msg=document.getElementById('login-message');
+    function submitData() {
+      var name = document.getElementById('tbxName').value;
+      var family = document.getElementById('tbxFamily').value;
+      var phone = document.getElementById('tbxPhone').value;
+      var pass = document.getElementById('tbxPass').value;
+      var status = document.getElementById('status');
+      var loading = document.getElementById('loading');
 
-  if(!phone||!pass){ msg.textContent='تمام فیلدها الزامی هستند.'; msg.className='message error'; return;}
+      if (!name || !family || !phone || !pass) {
+        status.innerText = "لطفاً تمام فیلدهای ضروری را پر کنید";
+        status.style.color = "var(--danger)";
+        status.style.backgroundColor = "#ffebee";
+        return;
+      }
 
-  const formData=new URLSearchParams();
-  formData.append('action','login');
-  formData.append('phone',phone);
-  formData.append('pass',pass);
+      if (pass.length < 8) {
+        status.innerText = "رمز عبور باید حداقل ۸ کاراکتر باشد";
+        status.style.color = "var(--danger)";
+        status.style.backgroundColor = "#ffebee";
+        return;
+      }
 
-  try{
-    const response=await fetch(scriptUrl,{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-      body:formData
-    });
-    const result=await response.json();
-    if(result.status==='success'){
-      msg.textContent='ورود موفقیت‌آمیز بود!';
-      msg.className='message success';
-      localStorage.setItem('user',JSON.stringify(result.user));
-      setTimeout(()=>window.location.href='5squestion.html',1500);
-    }else{
-      msg.textContent=result.message;
-      msg.className='message error';
+      if (!/^09\d{9}$/.test(phone)) {
+        status.innerText = "شماره همراه باید با 09 شروع شده و 11 رقمی باشد";
+        status.style.color = "var(--danger)";
+        status.style.backgroundColor = "#ffebee";
+        return;
+      }
+
+      // نمایش لودینگ
+      loading.style.display = "flex";
+      status.innerText = "";
+      status.style.backgroundColor = "transparent";
+
+      fetch("https://script.google.com/macros/s/AKfycbxUA2lQo_WiLGIKXVNxeMkmkhUhGHMsnOZ-nnLSa9hq8jEhFv0k2EmqeTAev12JgQia/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "tbxName=" + encodeURIComponent(name) +
+          "&tbxFamily=" + encodeURIComponent(family) +
+          "&tbxPhone=" + encodeURIComponent(phone) +
+          "&tbxPass=" + encodeURIComponent(pass)
+      })
+        .then(response => response.text())
+        .then(raw => {
+          loading.style.display = "none";
+          try {
+            var data = JSON.parse(raw);
+            if (data.result === "success") {
+              status.innerText = "اطلاعات با موفقیت ثبت شد";
+              status.style.color = "var(--success)";
+              status.style.backgroundColor = "#e8f5e9";
+            } else {
+              status.innerText = "خطا: " + data.message;
+              status.style.color = "var(--danger)";
+              status.style.backgroundColor = "#ffebee";
+            }
+          } catch (e) {
+            status.innerText = "پاسخ نامعتبر از سرور: " + raw;
+            status.style.color = "var(--danger)";
+            status.style.backgroundColor = "#ffebee";
+          }
+        })
+        .catch(error => {
+          loading.style.display = "none";
+          status.innerText = "خطا در ارسال اطلاعات: " + error;
+          status.style.color = "var(--danger)";
+          status.style.backgroundColor = "#ffebee";
+        });
     }
-  }catch(e){
-    msg.textContent='خطا در ارتباط با سرور.';
-    msg.className='message error';
-    console.error(e);
-  }
-}
-</script>
+  </script>
 </body>
+
 </html>
