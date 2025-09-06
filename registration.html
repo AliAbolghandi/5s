@@ -137,6 +137,8 @@
       z-index: 2;
     }
 
+   
+
     input:focus~.password-toggle {
       color: var(--primary);
     }
@@ -253,6 +255,12 @@
       <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
     </div>
 
+    <div class="input-group">
+      <input type="password" id="tbxRePass" placeholder="تکرار رمز عبور">
+      <i class="input-icon fas fa-lock"></i>
+      <i class="password-toggle fas fa-eye" onclick="toggleRePassword()"></i>
+    </div>
+
     <button onclick="submitData()">ثبت اطلاعات</button>
 
     <div id="loading" class="loading">
@@ -280,11 +288,25 @@
       }
     }
 
+    function toggleRePassword() {
+      const passwordInput = document.getElementById('tbxRePass');
+      const toggleIcon = document.querySelector('.password-toggle');
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
     function submitData() {
       var name = document.getElementById('tbxName').value;
       var family = document.getElementById('tbxFamily').value;
       var phone = document.getElementById('tbxPhone').value;
       var pass = document.getElementById('tbxPass').value;
+      var repass = document.getElementById('tbxRePass').value;
       var status = document.getElementById('status');
       var loading = document.getElementById('loading');
 
@@ -298,6 +320,13 @@
 
       if (pass.length < 8) {
         status.innerText = "رمز عبور باید حداقل ۸ کاراکتر باشد";
+        status.style.color = "var(--danger)";
+        status.style.backgroundColor = "#ffebee";
+        return;
+      }
+
+      if (pass!=repass) {
+        status.innerText = "رمز عبور یکسان وارد نشده است";
         status.style.color = "var(--danger)";
         status.style.backgroundColor = "#ffebee";
         return;
