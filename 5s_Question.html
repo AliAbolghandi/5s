@@ -156,7 +156,15 @@
             opacity: 0.7;
         }
 
-        #factory-container, 
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        #factory-container,
         #area-container {
             display: flex;
             flex-wrap: wrap;
@@ -174,7 +182,19 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             width: 100%;
             text-align: right;
+            direction: rtl;
+            /* اضافه شده برای ترازبندی بهتر */
             transition: var(--transition);
+        }
+
+        .question p {
+            margin: 0 0 10px 0;
+            font-weight: 500;
+            color: var(--dark);
+            direction: rtl;
+            /* اضافه شده برای ترازبندی بهتر */
+            unicode-bidi: plaintext;
+            /* اضافه شده برای نمایش صحیح متن انگلیسی */
         }
 
         .question:hover {
@@ -182,20 +202,16 @@
             transform: translateY(-2px);
         }
 
-        .question p {
-            margin: 0 0 10px 0;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
         input[type="number"] {
             width: 70px;
             padding: 10px;
             font-size: 16px;
             text-align: center;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #717579;
             border-radius: var(--border-radius);
             transition: var(--transition);
+            direction: ltr;
+            /* اعداد همیشه از چپ به راست نمایش داده شوند */
         }
 
         input[type="number"]:focus {
@@ -223,7 +239,7 @@
             align-items: center;
         }
 
-        #questions-container > h3 {
+        #questions-container>h3 {
             text-align: center;
             margin-bottom: 20px;
             color: var(--dark);
@@ -268,6 +284,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             border-radius: var(--border-radius);
             overflow: hidden;
+            direction: rtl;
         }
 
         table th {
@@ -289,6 +306,33 @@
 
         table tr:hover {
             background-color: #e9ecef;
+        }
+
+        /* لودینگ */
+        .loading {
+            display: none;
+            margin: 15px auto;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* media query برای موبایل */
@@ -376,8 +420,14 @@
         <div class="content">
             <h3>پیش‌نمایش ارزیابی</h3>
             <div id="summary"></div>
-            <button class="btn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
-            <button class="btn" onclick="closePopup()">انصراف</button>
+
+            <div class="loading" id="submitLoading">
+                <div class="loading-spinner"></div>
+                <p>در حال ثبت اطلاعات...</p>
+            </div>
+
+            <button class="btn" id="submitBtn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
+            <button class="btn btn-danger" onclick="closePopup()">انصراف</button>
         </div>
     </div>
 
@@ -508,7 +558,11 @@
         }
 
         async function finalSubmit() {
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwOPF0ZCT3TwlxQcHimLLq1QesaN8wOUJbyfrzMHdYILsGMCNP9q30qDEXT9pC7Ts_G/exec"; // جایگزین کن
+            // نمایش لودینگ و مخفی کردن دکمه
+            document.getElementById("submitLoading").style.display = "block";
+            document.getElementById("submitBtn").style.display = "none";
+
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZGpMOFdj476L_gJI16cqmOsFEw_Io-_cbiqIlKyifCNwBCvfB0B8iD35qnXOS_1XC/exec"; // جایگزین کن
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -563,9 +617,12 @@
                 }
             } catch (err) {
                 alert("خطا در ارسال به سرور: " + err);
+            } finally {
+                // در هر صورت مخفی کردن لودینگ و نمایش دکمه
+                document.getElementById("submitLoading").style.display = "none";
+                document.getElementById("submitBtn").style.display = "block";
             }
         }
-
 
         loadData();
 
