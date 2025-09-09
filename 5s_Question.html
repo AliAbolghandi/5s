@@ -504,8 +504,13 @@
                 qDiv.className = "question";
                 qDiv.innerHTML = `
           <p>${row[4]} (وزن: ${row[5]})</p>
-          <input type="number" min="0" max="5" data-weight="${row[5]}" data-question="${row[4]}"
-                 oninput="nextFocus(this, ${index})">
+          <input type="number" min="0" max="5"
+       data-qno="${row[2]}"
+       data-category="${row[3]}"
+       data-question="${row[4]}"
+       data-weight="${row[5]}"
+       oninput="nextFocus(this, ${index})">
+
         `;
                 container.appendChild(qDiv);
             });
@@ -538,7 +543,7 @@
                 const w = parseFloat(inp.dataset.weight) || 1;
                 total += (val * w) / 5;
             });
-            document.getElementById("result").textContent = "جمع امتیاز: " + total.toFixed(2);
+            document.getElementById("result").textContent = "جمع امتیاز: " + "%"+total.toFixed(2) ;
         }
 
         function showPopup() {
@@ -562,7 +567,7 @@
             document.getElementById("submitLoading").style.display = "block";
             document.getElementById("submitBtn").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZGpMOFdj476L_gJI16cqmOsFEw_Io-_cbiqIlKyifCNwBCvfB0B8iD35qnXOS_1XC/exec"; // جایگزین کن
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyTSHlT36zQxD4SdhPi4MqY4lJQWXfK1LvC2p26o64yT9P5Th9CVBGc6usMZDQoi6PZ/exec"; // جایگزین کن
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -575,10 +580,13 @@
                     user: user,
                     factory: selectedFactory,
                     area: selectedArea,
-                    question: inp.dataset.question,
-                    score: inp.value || "0",
-                    weight: inp.dataset.weight || "1"
+                    qno: inp.dataset.qno || "",
+                    category: inp.dataset.category || "",
+                    question: inp.dataset.question || "",
+                    weight: inp.dataset.weight || "1",
+                    score: inp.value || "0"
                 });
+
             });
 
             // بسته‌بندی به صورت application/x-www-form-urlencoded (بدون preflight)
