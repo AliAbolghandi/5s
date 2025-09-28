@@ -391,58 +391,89 @@
                 justify-content: flex-start;
                 /* به جای space-around → سمت راست/چپ قابل کنترل */
                 padding-left: 30px;
+                /* کمی فضای داخلی برای کل داشبورد */
             }
 
+            /* ✅ دکمه خروج همیشه ۳۰px از سمت چپ فاصله داشته باشد */
             #logoutBtn.btn-logout {
-                font-family: 'Yekan', sans-serif;
-                font-size: small;
                 margin-left: 30px !important;
                 /* فاصله ثابت از لبه چپ نمایشگر */
                 margin-right: auto !important;
                 /* دکمه را به چپ می‌برد */
             }
+        }
 
-            #dashboard h2 {
-                display: none;
-            }
+        #dashboard h2 {
+            display: none;
+        }
 
-            #dashboard .avatar img {
-                width: 60px;
-                height: 60px;
-                margin-bottom: 0;
-                margin-right: 15px;
-            }
+        #dashboard .avatar img {
+            width: 55px;
+            height: 55px;
+            margin: 0 10px;
+        }
 
-            #dashboard .user-info {
-                text-align: right;
-            }
+        #dashboard .user-info {
+            text-align: right;
+        }
 
-            #dashboard .username,
-            #dashboard .phone {
-                font-size: 14px;
-                margin: 3px 10px;
-            }
+        #dashboard .username,
+        #dashboard .phone {
+            font-size: 13px;
+            margin: 2px 5px;
+        }
 
-            #main {
-                width: 100%;
-                padding: 20px 15px;
-            }
+        #main {
+            width: 100%;
+            padding: 15px 10px;
+        }
 
-            .btn {
-                min-width: 120px;
-                font-size: 14px;
-                padding: 10px 15px;
-                margin: 5px;
-            }
+        #factory-container,
+        #area-container {
+            flex-direction: row;
+            /* ✅ دکمه‌ها کنار هم (در صورت جا شدن) */
+            flex-wrap: wrap;
+            /* ✅ اگر فضا نباشد می‌روند زیر هم */
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            /* ✅ فاصله بین دکمه‌ها */
+        }
 
-            .question {
-                padding: 12px;
-            }
+        .btn {
+            width: auto;
+            /* ✅ دکمه به اندازه متن */
+            min-width: unset;
+            /* ✅ حذف حداقل عرض */
+            font-size: 15px;
+            padding: 10px 16px;
+            /* ✅ کمی حاشیه داخلی برای لمس راحت‌تر */
+            margin: 4px;
+            white-space: nowrap;
+            /* ✅ متن نشکند */
+        }
 
-            input[type="number"] {
-                width: 60px;
-                padding: 8px;
-            }
+        .question {
+            width: 100%;
+            padding: 12px;
+        }
+
+        input[type="number"] {
+            width: 65px;
+            padding: 8px;
+            font-size: 15px;
+        }
+
+        #popup .content {
+            width: 95%;
+            padding: 20px;
+        }
+
+        table th,
+        table td {
+            font-size: 14px;
+            padding: 8px;
+        }
         }
     </style>
 </head>
