@@ -38,19 +38,51 @@
 
         /* داشبورد */
         #dashboard {
-            width: 20%;
-            height: 100vh;
+            width: 100%;
+            height: 20vh;
             background: var(--primary);
             color: white;
             padding: 30px 20px;
             box-sizing: border-box;
             text-align: center;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex-direction: row-reverse;
+            justify-content: right;
             align-items: center;
             box-shadow: var(--box-shadow);
+
+
         }
+
+        /* دکمه خروج */
+
+        #logoutBtn.btn-logout {
+            font-family: 'Yekan', sans-serif;
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+
+            margin-left: 30px;
+            /* ✅ فاصله ثابت از سمت چپ نمایشگر */
+            margin-right: auto;
+            /* ✅ باقی فضا از راست → دکمه به چپ رانده می‌شود */
+
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #logoutBtn.btn-logout:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+
 
         #dashboard h2 {
             margin: 0 0 25px 0;
@@ -74,6 +106,7 @@
         #dashboard .avatar img {
             width: 100px;
             height: 100px;
+
             border-radius: 50%;
             margin-bottom: 15px;
             border: 3px solid rgba(255, 255, 255, 0.3);
@@ -83,7 +116,7 @@
         #dashboard .username {
             font-size: 18px;
             font-weight: bold;
-            margin: 10px 0 5px;
+            margin: 10px 30px 5px;
         }
 
         #dashboard .phone {
@@ -94,7 +127,7 @@
         /* محتوای اصلی */
         #main {
             flex: 1;
-            padding: 30px;
+            padding: 0px;
             min-width: 300px;
             display: flex;
             flex-direction: column;
@@ -117,7 +150,7 @@
             bottom: 0;
             right: 50%;
             transform: translateX(50%);
-            width: 50px;
+            width: 100%;
             height: 3px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             border-radius: 3px;
@@ -172,6 +205,19 @@
             margin-bottom: 20px;
             width: 100%;
         }
+
+        .divider {
+            width: 80%;
+            margin: 20px auto;
+            border: 0;
+            height: 3px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+
 
         .question {
             margin: 15px 0;
@@ -342,11 +388,18 @@
             }
 
             #dashboard {
-                width: 100%;
-                height: auto;
-                padding: 20px 15px;
-                flex-direction: row;
-                justify-content: space-around;
+                justify-content: flex-start;
+                /* به جای space-around → سمت راست/چپ قابل کنترل */
+                padding-left: 30px;
+            }
+
+            #logoutBtn.btn-logout {
+                font-family: 'Yekan', sans-serif;
+                font-size: small;
+                margin-left: 30px !important;
+                /* فاصله ثابت از لبه چپ نمایشگر */
+                margin-right: auto !important;
+                /* دکمه را به چپ می‌برد */
             }
 
             #dashboard h2 {
@@ -367,7 +420,7 @@
             #dashboard .username,
             #dashboard .phone {
                 font-size: 14px;
-                margin: 3px 0;
+                margin: 3px 10px;
             }
 
             #main {
@@ -397,7 +450,7 @@
 <body>
     <!-- داشبورد -->
     <div id="dashboard">
-        <h2>کاربر</h2>
+        <!--      <h2>کاربر</h2>  -->
         <div class="avatar">
             <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar">
         </div>
@@ -405,12 +458,22 @@
             <p class="username">نام کاربر</p>
             <p class="phone">شماره موبایل</p>
         </div>
+        <!-- ✅ دکمه خروج -->
+        <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
+            🔴 خروج
+        </button>
     </div>
 
     <!-- محتوای اصلی -->
     <div id="main">
         <h2>انتخاب کارخانه</h2>
-        <div id="factory-container"></div>
+        <div id="factory-container">
+            <div class="loading" id="factoryLoading">
+                <div class="loading-spinner"></div>
+                <p>در حال بارگذاری کارخانه‌ها...</p>
+            </div>
+        </div>
+        <hr class="divider" id="factoryDivider" style="display:none;"> <!-- ⬅️ خط جداکننده -->
         <div id="area-container"></div>
         <div id="questions-container"></div>
     </div>
@@ -448,6 +511,7 @@
         let selectedArea = "";
 
         async function loadData() {
+            document.getElementById("factoryLoading").style.display = "block"; // ⬅️ نمایش لودینگ
             const res = await fetch(sheetUrl);
             const text = await res.text();
             const delimiter = text.includes(";") ? ";" : ",";
@@ -458,7 +522,8 @@
 
         function renderFactories() {
             const container = document.getElementById("factory-container");
-            container.innerHTML = "";
+            document.getElementById("factoryLoading").style.display = "none"; // ⬅️ مخفی کردن لودینگ
+            container.innerHTML = ""; // پاک کردن محتوا بعد از لودینگ
             container.style.display = "flex";
             const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
             factories.forEach(factory => {
@@ -474,11 +539,15 @@
             });
         }
 
+
         function renderAreas(factory) {
+            document.getElementById("factoryDivider").style.display = "block"; // ⬅️ نمایش خط جداکننده
+
             const container = document.getElementById("area-container");
             const qContainer = document.getElementById("questions-container");
+
             qContainer.innerHTML = "";
-            container.innerHTML = ""; // حذف متن "ناحیه‌های کارخانه"
+            container.innerHTML = "";
             container.style.display = "flex";
 
             const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]).filter(a => a))];
@@ -494,6 +563,7 @@
                 container.appendChild(btn);
             });
         }
+
 
         function renderQuestions(factory, area) {
             const container = document.getElementById("questions-container");
@@ -543,7 +613,7 @@
                 const w = parseFloat(inp.dataset.weight) || 1;
                 total += (val * w) / 5;
             });
-            document.getElementById("result").textContent = "جمع امتیاز: " + "%"+total.toFixed(2) ;
+            document.getElementById("result").textContent = "جمع امتیاز: " + "%" + total.toFixed(2);
         }
 
         function showPopup() {
@@ -567,7 +637,7 @@
             document.getElementById("submitLoading").style.display = "block";
             document.getElementById("submitBtn").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx598KrWTMcQVg3iERaYBQAbN8HHLU9YmcnLypyJb1ak1v6TcBPhu0bd3KLUtvUNV7r/exec"; // جایگزین کن
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec"; // جایگزین کن
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
