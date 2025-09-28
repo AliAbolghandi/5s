@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.fontcdn.ir/Font/Yekan/Yekan.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>ارزیابی کارخانه</title>
     <style>
         :root {
@@ -23,28 +21,60 @@
             --transition: all 0.3s ease;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Yekan', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
             min-height: 100vh;
         }
 
+        /* داشبورد */
         #dashboard {
+            width: 100%;
+            height: 20vh;
             background: var(--primary);
             color: white;
-            padding: 20px 0;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: right;
+            align-items: center;
             box-shadow: var(--box-shadow);
+
+
         }
 
+        /* دکمه خروج */
+
         #logoutBtn.btn-logout {
+            font-family: 'Yekan', sans-serif;
             background: var(--danger);
             color: white;
             border: none;
-            padding: 5px 15px;
+            padding: 5px 10px;
             font-size: 16px;
             border-radius: var(--border-radius);
             cursor: pointer;
+
+            margin-left: 30px;
+            /* ✅ فاصله ثابت از سمت چپ نمایشگر */
+            margin-right: auto;
+            /* ✅ باقی فضا از راست → دکمه به چپ رانده می‌شود */
+
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #logoutBtn.btn-logout:hover {
@@ -52,10 +82,33 @@
             transform: translateY(-2px);
         }
 
+
+
+        #dashboard h2 {
+            margin: 0 0 25px 0;
+            font-size: 22px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        #dashboard h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 50px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+        }
+
         #dashboard .avatar img {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
+
             border-radius: 50%;
+            margin-bottom: 15px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
@@ -63,12 +116,23 @@
         #dashboard .username {
             font-size: 18px;
             font-weight: bold;
-            margin: 10px 0 5px;
+            margin: 10px 30px 5px;
         }
 
         #dashboard .phone {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* محتوای اصلی */
+        #main {
+            flex: 1;
+            padding: 0px;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         #main h2 {
@@ -92,7 +156,8 @@
             border-radius: 3px;
         }
 
-        .btn-custom {
+        /* دکمه‌ها */
+        .btn {
             font-family: 'Yekan', sans-serif;
             margin: 8px;
             padding: 12px 24px;
@@ -101,34 +166,44 @@
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
+            flex: 1;
             min-width: 140px;
             text-align: center;
             transition: var(--transition);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-custom:hover {
+        .btn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .btn-custom.active {
+        .btn.active {
             background: var(--success);
         }
 
-        .btn-custom.disabled {
+        .btn.disabled {
             background: var(--gray);
             cursor: not-allowed;
             opacity: 0.7;
         }
 
-        .btn-danger-custom {
+        .btn-danger {
             background: var(--danger);
         }
 
-        .btn-danger-custom:hover {
+        .btn-danger:hover {
             background: #d32f2f;
+        }
+
+        #factory-container,
+        #area-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .divider {
@@ -141,6 +216,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+
+
+
         .question {
             margin: 15px 0;
             padding: 15px;
@@ -148,7 +226,10 @@
             border-radius: var(--border-radius);
             background: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
             text-align: right;
+            direction: rtl;
+            /* اضافه شده برای ترازبندی بهتر */
             transition: var(--transition);
         }
 
@@ -156,7 +237,10 @@
             margin: 0 0 10px 0;
             font-weight: 500;
             color: var(--dark);
+            direction: rtl;
+            /* اضافه شده برای ترازبندی بهتر */
             unicode-bidi: plaintext;
+            /* اضافه شده برای نمایش صحیح متن انگلیسی */
         }
 
         .question:hover {
@@ -173,6 +257,7 @@
             border-radius: var(--border-radius);
             transition: var(--transition);
             direction: ltr;
+            /* اعداد همیشه از چپ به راست نمایش داده شوند */
         }
 
         input[type="number"]:focus {
@@ -189,7 +274,22 @@
             padding: 15px;
             background: var(--light);
             border-radius: var(--border-radius);
+            width: 100%;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        #questions-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #questions-container>h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--dark);
+            width: 100%;
         }
 
         #popup {
@@ -230,6 +330,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             border-radius: var(--border-radius);
             overflow: hidden;
+            direction: rtl;
         }
 
         table th {
@@ -253,6 +354,7 @@
             background-color: #e9ecef;
         }
 
+        /* لودینگ */
         .loading {
             display: none;
             margin: 15px auto;
@@ -279,7 +381,27 @@
             }
         }
 
+        /* media query برای موبایل */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            #dashboard {
+                justify-content: flex-start;
+                /* به جای space-around → سمت راست/چپ قابل کنترل */
+                padding-left: 30px;
+            }
+
+            #logoutBtn.btn-logout {
+                font-family: 'Yekan', sans-serif;
+                font-size: small;
+                margin-left: 30px !important;
+                /* فاصله ثابت از لبه چپ نمایشگر */
+                margin-right: auto !important;
+                /* دکمه را به چپ می‌برد */
+            }
+
             #dashboard h2 {
                 display: none;
             }
@@ -288,15 +410,25 @@
                 width: 60px;
                 height: 60px;
                 margin-bottom: 0;
+                margin-right: 15px;
+            }
+
+            #dashboard .user-info {
+                text-align: right;
             }
 
             #dashboard .username,
             #dashboard .phone {
                 font-size: 14px;
-                margin: 3px 0;
+                margin: 3px 10px;
             }
 
-            .btn-custom {
+            #main {
+                width: 100%;
+                padding: 20px 15px;
+            }
+
+            .btn {
                 min-width: 120px;
                 font-size: 14px;
                 padding: 10px 15px;
@@ -317,42 +449,33 @@
 
 <body>
     <!-- داشبورد -->
-    <div id="dashboard" class="container-fluid">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-4 col-12 order-md-1 order-2 text-md-end text-center">
-                    <div class="avatar d-inline-block">
-                        <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar" class="img-fluid">
-                    </div>
-                    <div class="user-info d-inline-block text-md-end text-center me-md-3">
-                        <p class="username mb-1">نام کاربر</p>
-                        <p class="phone mb-0">شماره موبایل</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-12 order-md-2 order-1 text-center mb-md-0 mb-3">
-                    <h2 class="d-none d-md-block">کاربر</h2>
-                </div>
-                <div class="col-md-4 col-12 order-md-3 order-3 text-md-start text-center">
-                    <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
-                        🔴 خروج
-                    </button>
-                </div>
-            </div>
+    <div id="dashboard">
+        <!--      <h2>کاربر</h2>  -->
+        <div class="avatar">
+            <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar">
         </div>
+        <div class="user-info">
+            <p class="username">نام کاربر</p>
+            <p class="phone">شماره موبایل</p>
+        </div>
+        <!-- ✅ دکمه خروج -->
+        <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
+            🔴 خروج
+        </button>
     </div>
 
     <!-- محتوای اصلی -->
-    <div id="main" class="container py-4">
+    <div id="main">
         <h2>انتخاب کارخانه</h2>
-        <div id="factory-container" class="row justify-content-center">
+        <div id="factory-container">
             <div class="loading" id="factoryLoading">
                 <div class="loading-spinner"></div>
                 <p>در حال بارگذاری کارخانه‌ها...</p>
             </div>
         </div>
-        <hr class="divider" id="factoryDivider" style="display:none;">
-        <div id="area-container" class="row justify-content-center"></div>
-        <div id="questions-container" class="row justify-content-center"></div>
+        <hr class="divider" id="factoryDivider" style="display:none;"> <!-- ⬅️ خط جداکننده -->
+        <div id="area-container"></div>
+        <div id="questions-container"></div>
     </div>
 
     <!-- popup -->
@@ -366,12 +489,11 @@
                 <p>در حال ثبت اطلاعات...</p>
             </div>
 
-            <button class="btn-custom" id="submitBtn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
-            <button class="btn-custom btn-danger-custom" onclick="closePopup()">انصراف</button>
+            <button class="btn" id="submitBtn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
+            <button class="btn btn-danger" onclick="closePopup()">انصراف</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         //خواندن و نمایش نام در داشبورد
         document.addEventListener("DOMContentLoaded", () => {
@@ -389,7 +511,7 @@
         let selectedArea = "";
 
         async function loadData() {
-            document.getElementById("factoryLoading").style.display = "block";
+            document.getElementById("factoryLoading").style.display = "block"; // ⬅️ نمایش لودینگ
             const res = await fetch(sheetUrl);
             const text = await res.text();
             const delimiter = text.includes(";") ? ";" : ",";
@@ -400,13 +522,13 @@
 
         function renderFactories() {
             const container = document.getElementById("factory-container");
-            document.getElementById("factoryLoading").style.display = "none";
-            container.innerHTML = "";
+            document.getElementById("factoryLoading").style.display = "none"; // ⬅️ مخفی کردن لودینگ
+            container.innerHTML = ""; // پاک کردن محتوا بعد از لودینگ
             container.style.display = "flex";
             const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
             factories.forEach(factory => {
                 const btn = document.createElement("button");
-                btn.className = "btn-custom col-md-3 col-sm-5 col-10";
+                btn.className = "btn";
                 btn.textContent = factory;
                 btn.onclick = () => {
                     selectedFactory = factory;
@@ -417,8 +539,9 @@
             });
         }
 
+
         function renderAreas(factory) {
-            document.getElementById("factoryDivider").style.display = "block";
+            document.getElementById("factoryDivider").style.display = "block"; // ⬅️ نمایش خط جداکننده
 
             const container = document.getElementById("area-container");
             const qContainer = document.getElementById("questions-container");
@@ -430,7 +553,7 @@
             const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]).filter(a => a))];
             areas.forEach(area => {
                 const btn = document.createElement("button");
-                btn.className = "btn-custom col-md-3 col-sm-5 col-10";
+                btn.className = "btn";
                 btn.textContent = area;
                 btn.onclick = () => {
                     selectedArea = area;
@@ -441,13 +564,14 @@
             });
         }
 
+
         function renderQuestions(factory, area) {
             const container = document.getElementById("questions-container");
-            container.innerHTML = `<div class="col-12"><h3>سوالات ${area} - ${factory}</h3></div>`;
+            container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
             const questions = data.filter(r => r[0] === factory && r[1] === area);
             questions.forEach((row, index) => {
                 const qDiv = document.createElement("div");
-                qDiv.className = "question col-12";
+                qDiv.className = "question";
                 qDiv.innerHTML = `
           <p>${row[4]} (وزن: ${row[5]})</p>
           <input type="number" min="0" max="5"
@@ -456,17 +580,15 @@
        data-question="${row[4]}"
        data-weight="${row[5]}"
        oninput="nextFocus(this, ${index})">
+
         `;
                 container.appendChild(qDiv);
             });
 
-            const resultDiv = document.createElement("div");
-            resultDiv.className = "col-12";
-            resultDiv.innerHTML = `
+            container.innerHTML += `
         <div id="result">جمع امتیاز واحد: 0</div>
-        <button class="btn-custom" onclick="showPopup()">ثبت ارزیابی</button>
+        <button class="btn" onclick="showPopup()">ثبت ارزیابی</button>
       `;
-            container.appendChild(resultDiv);
         }
 
         function nextFocus(input, index) {
@@ -511,10 +633,11 @@
         }
 
         async function finalSubmit() {
+            // نمایش لودینگ و مخفی کردن دکمه
             document.getElementById("submitLoading").style.display = "block";
             document.getElementById("submitBtn").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec";
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec"; // جایگزین کن
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -533,22 +656,26 @@
                     weight: inp.dataset.weight || "1",
                     score: inp.value || "0"
                 });
+
             });
 
+            // بسته‌بندی به صورت application/x-www-form-urlencoded (بدون preflight)
             const params = new URLSearchParams();
             params.append('rows', JSON.stringify(rows));
+            // اختیاری: params.append('key','MY_SECRET'); // اگر می‌خواهی یک کلید امنیتی هم بفرستی
 
             try {
                 const res = await fetch(WEBAPP_URL, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        "Content-Type": "application/x-www-form-urlencoded" // بسیار مهم — باعث جلوگیری از preflight می‌شود
                     },
                     body: params.toString(),
-                    mode: "cors"
+                    mode: "cors" // خوب است صریح بنویسیم
                 });
 
                 const text = await res.text();
+                // سرور ما JSON جواب می‌دهد؛ تلاش برای پارس کردن
                 try {
                     const data = JSON.parse(text);
                     if (data.result === "success") {
@@ -558,6 +685,7 @@
                         alert("خطا در ذخیره‌سازی: " + (data.message || text));
                     }
                 } catch (e) {
+                    // اگر سرور فقط "OK" برگرداند
                     if (text.trim().toUpperCase() === "OK") {
                         alert("امتیازها با موفقیت ذخیره شدند ✅");
                         closePopup();
@@ -568,6 +696,7 @@
             } catch (err) {
                 alert("خطا در ارسال به سرور: " + err);
             } finally {
+                // در هر صورت مخفی کردن لودینگ و نمایش دکمه
                 document.getElementById("submitLoading").style.display = "none";
                 document.getElementById("submitBtn").style.display = "block";
             }
@@ -576,7 +705,7 @@
         loadData();
 
         function highlightSelection(container, activeBtn) {
-            const buttons = container.querySelectorAll(".btn-custom");
+            const buttons = container.querySelectorAll(".btn");
             buttons.forEach(btn => {
                 if (btn === activeBtn) {
                     btn.classList.add("active");
