@@ -52,6 +52,7 @@
             align-items: center;
             box-shadow: var(--box-shadow);
             flex-wrap: nowrap;
+            /* جلوگیری از شکستن خط */
         }
 
         /* دکمه خروج */
@@ -70,6 +71,7 @@
             justify-content: center;
             margin-left: 20px;
             white-space: nowrap;
+            /* جلوگیری از شکستن متن */
         }
 
         #logoutBtn.btn-logout:hover {
@@ -88,6 +90,7 @@
 
         #dashboard h2::after {
             display: none;
+            /* حذف خط زیر عنوان در حالت ردیفی */
         }
 
         #dashboard .avatar {
@@ -287,15 +290,13 @@
             width: 100%;
         }
 
+
+
         /* لودینگ */
         .loading {
             display: none;
             margin: 15px auto;
             text-align: center;
-            background: var(--light);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
         }
 
         .loading-spinner {
@@ -316,22 +317,6 @@
             100% {
                 transform: rotate(360deg);
             }
-        }
-
-        /* پیام موفقیت */
-        .success-message {
-            display: none;
-            margin: 15px auto;
-            text-align: center;
-            background: var(--success);
-            color: white;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            max-width: 400px;
         }
 
         /* رسپانسیو برای تبلت */
@@ -421,6 +406,8 @@
                 padding: 12px;
                 margin-top: 15px;
             }
+
+
         }
 
         /* رسپانسیو برای موبایل‌های کوچک */
@@ -474,14 +461,17 @@
                 font-size: 13px;
             }
 
-            .success-message {
-                font-size: 14px;
-                padding: 12px;
-            }
 
             .divider {
                 width: 90%;
                 margin: 15px auto;
+            }
+
+            /* بهبود نمایش جدول در موبایل‌های کوچک */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
 
@@ -520,6 +510,7 @@
 <body>
     <!-- داشبورد -->
     <div id="dashboard">
+        <!--      <h2>کاربر</h2>  -->
         <div class="avatar">
             <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar">
         </div>
@@ -527,6 +518,7 @@
             <p class="username">نام کاربر</p>
             <p class="phone">شماره موبایل</p>
         </div>
+        <!-- ✅ دکمه خروج -->
         <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
             🔴 خروج
         </button>
@@ -538,24 +530,18 @@
         <div id="factory-container">
             <div class="loading" id="factoryLoading">
                 <div class="loading-spinner"></div>
-                <p>...در حال بارگذاری واحدهای اصلی</p>
+                <p>...در حال بارگذاری واحد های اصلی</p>
             </div>
         </div>
-        <hr class="divider" id="factoryDivider" style="display:none;">
+        <hr class="divider" id="factoryDivider" style="display:none;"> <!-- ⬅️ خط جداکننده -->
         <div id="area-container"></div>
-        <div id="questions-container">
-            <div class="loading" id="submitLoading" style="display: none;">
-                <div class="loading-spinner"></div>
-                <p>در حال ثبت اطلاعات...</p>
-            </div>
-            <div class="success-message" id="successMessage" style="display: none;">
-                اطلاعات با موفقیت ذخیره شدند ✅
-            </div>
-        </div>
+        <div id="questions-container"></div>
     </div>
 
+
+
     <script>
-        // خواندن و نمایش نام در داشبورد
+        //خواندن و نمایش نام در داشبورد
         document.addEventListener("DOMContentLoaded", () => {
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
@@ -571,7 +557,7 @@
         let selectedArea = "";
 
         async function loadData() {
-            document.getElementById("factoryLoading").style.display = "block";
+            document.getElementById("factoryLoading").style.display = "block"; // ⬅️ نمایش لودینگ
             const res = await fetch(sheetUrl);
             const text = await res.text();
             const delimiter = text.includes(";") ? ";" : ",";
@@ -582,8 +568,8 @@
 
         function renderFactories() {
             const container = document.getElementById("factory-container");
-            document.getElementById("factoryLoading").style.display = "none";
-            container.innerHTML = "";
+            document.getElementById("factoryLoading").style.display = "none"; // ⬅️ مخفی کردن لودینگ
+            container.innerHTML = ""; // پاک کردن محتوا بعد از لودینگ
             container.style.display = "flex";
             const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
             factories.forEach(factory => {
@@ -599,8 +585,10 @@
             });
         }
 
+
         function renderAreas(factory) {
-            document.getElementById("factoryDivider").style.display = "block";
+            document.getElementById("factoryDivider").style.display = "block"; // ⬅️ نمایش خط جداکننده
+
             const container = document.getElementById("area-container");
             const qContainer = document.getElementById("questions-container");
 
@@ -622,6 +610,7 @@
             });
         }
 
+
         function renderQuestions(factory, area) {
             const container = document.getElementById("questions-container");
             container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
@@ -630,21 +619,30 @@
                 const qDiv = document.createElement("div");
                 qDiv.className = "question";
                 qDiv.innerHTML = `
-                    <p>${row[4]} (وزن: ${row[5]})</p>
-                    <input type="number" min="0" max="5"
-                        data-qno="${row[2]}"
-                        data-category="${row[3]}"
-                        data-question="${row[4]}"
-                        data-weight="${row[5]}"
-                        oninput="nextFocus(this, ${index})">
-                `;
+          <p>${row[4]} (وزن: ${row[5]})</p>
+          <input type="number" min="0" max="5"
+       data-qno="${row[2]}"
+       data-category="${row[3]}"
+       data-question="${row[4]}"
+       data-weight="${row[5]}"
+       oninput="nextFocus(this, ${index})">
+
+        `;
                 container.appendChild(qDiv);
             });
 
             container.innerHTML += `
-                <div id="result">جمع امتیاز واحد: 0</div>
-                <button class="btn" onclick="confirmSubmit()">ثبت ارزیابی</button>
-            `;
+    <div id="result">جمع امتیاز واحد: 0</div>
+    <button class="btn" id="submitBtn" onclick="confirmSubmit()">ثبت ارزیابی</button>
+    <div class="loading" id="submitLoading" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>در حال ثبت اطلاعات...</p>
+    </div>
+    <div id="successMessage" style="display:none; background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+        ✅ اطلاعات با موفقیت ذخیره شدند
+    </div>
+`;
+
         }
 
         function nextFocus(input, index) {
@@ -672,17 +670,12 @@
             document.getElementById("result").textContent = "جمع امتیاز: " + "%" + total.toFixed(2);
         }
 
-        function confirmSubmit() {
-            const confirmed = confirm("آیا از ذخیره امتیازات اطمینان دارید؟");
-            if (confirmed) {
-                finalSubmit();
-            }
-        }
 
         async function finalSubmit() {
-            // نمایش لودینگ
+            // نمایش لودینگ و مخفی کردن دکمه
             document.getElementById("submitLoading").style.display = "block";
-            document.querySelector("#questions-container .btn").style.display = "none";
+            document.getElementById("submitBtn").style.display = "none";
+            document.getElementById("successMessage").style.display = "none"; // اطمینان از مخفی بودن پیام موفقیت
 
             const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec";
             const name = localStorage.getItem("name") || "نام";
@@ -705,6 +698,7 @@
                 });
             });
 
+            // بسته‌بندی به صورت application/x-www-form-urlencoded
             const params = new URLSearchParams();
             params.append('rows', JSON.stringify(rows));
 
@@ -724,32 +718,40 @@
                     if (data.result === "success") {
                         document.getElementById("submitLoading").style.display = "none";
                         document.getElementById("successMessage").style.display = "block";
-                        setTimeout(() => {
-                            document.getElementById("successMessage").style.display = "none";
-                            document.querySelector("#questions-container .btn").style.display = "block";
-                        }, 3000);
+                        // ریست فرم یا غیرفعال کردن دکمه برای جلوگیری از ثبت مجدد
+                        document.getElementById("questions-container").innerHTML = `
+                    <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
+                    <div id="successMessage" style="background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                        ✅ اطلاعات با موفقیت ذخیره شدند
+                    </div>
+                    <button class="btn" onclick="resetForm()">بازگشت به انتخاب واحد</button>
+                `;
                     } else {
-                        alert("خطا در ذخیره‌سازی: " + (data.message || text));
+                        throw new Error(data.message || "خطا در ذخیره‌سازی اطلاعات");
                     }
                 } catch (e) {
                     if (text.trim().toUpperCase() === "OK") {
                         document.getElementById("submitLoading").style.display = "none";
                         document.getElementById("successMessage").style.display = "block";
-                        setTimeout(() => {
-                            document.getElementById("successMessage").style.display = "none";
-                            document.querySelector("#questions-container .btn").style.display = "block";
-                        }, 3000);
+                        document.getElementById("questions-container").innerHTML = `
+                    <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
+                    <div id="successMessage" style="background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                        ✅ اطلاعات با موفقیت ذخیره شدند
+                    </div>
+                    <button class="btn" onclick="resetForm()">بازگشت به انتخاب واحد</button>
+                `;
                     } else {
-                        alert("پاسخ نامشخص از سرور: " + text);
+                        throw new Error("پاسخ نامشخص از سرور: " + text);
                     }
                 }
             } catch (err) {
-                alert("خطا در ارسال به سرور: " + err);
-            } finally {
+                alert("خطا در ارسال به سرور: " + err.message);
                 document.getElementById("submitLoading").style.display = "none";
-                document.querySelector("#questions-container .btn").style.display = "block";
+                document.getElementById("submitBtn").style.display = "block"; // نمایش دوباره دکمه در صورت خطا
             }
         }
+
+        loadData();
 
         function highlightSelection(container, activeBtn) {
             const buttons = container.querySelectorAll(".btn");
@@ -764,7 +766,25 @@
             });
         }
 
-        loadData();
+
+        function confirmSubmit() {
+            const isConfirmed = confirm("آیا از ثبت امتیازات اطمینان دارید؟");
+            if (isConfirmed) {
+                finalSubmit();
+            }
+        }
+
+
+        function resetForm() {
+            // ریست فرم و بازگشت به انتخاب واحد
+            document.getElementById("questions-container").innerHTML = "";
+            document.getElementById("area-container").innerHTML = "";
+            document.getElementById("factoryDivider").style.display = "none";
+            renderFactories();
+        }
+
+
+
     </script>
 </body>
 
