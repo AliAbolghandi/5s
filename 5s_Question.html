@@ -41,7 +41,7 @@
         #dashboard {
             width: 100%;
             height: 20vh;
-            border-radius: 0 0 10px 10px ;
+            border-radius: 0 0 10px 10px;
             background: var(--primary);
             color: white;
             padding: 20px 30px;
@@ -52,7 +52,6 @@
             align-items: center;
             box-shadow: var(--box-shadow);
             flex-wrap: nowrap;
-            /* جلوگیری از شکستن خط */
         }
 
         /* دکمه خروج */
@@ -71,7 +70,6 @@
             justify-content: center;
             margin-left: 20px;
             white-space: nowrap;
-            /* جلوگیری از شکستن متن */
         }
 
         #logoutBtn.btn-logout:hover {
@@ -90,7 +88,6 @@
 
         #dashboard h2::after {
             display: none;
-            /* حذف خط زیر عنوان در حالت ردیفی */
         }
 
         #dashboard .avatar {
@@ -111,7 +108,7 @@
         #dashboard .user-info {
             display: flex;
             flex-direction: column;
-            align-items:center;
+            align-items: center;
             margin-left: 15px;
         }
 
@@ -290,76 +287,15 @@
             width: 100%;
         }
 
-        #popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #popup .content {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            width: 95%;
-            max-width: 700px;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: var(--box-shadow);
-            text-align: center;
-            margin: 20px;
-        }
-
-        #popup .content h3 {
-            margin-bottom: 20px;
-            color: var(--dark);
-            text-align: center;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            direction: rtl;
-        }
-
-        table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        table td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
-
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        table tr:hover {
-            background-color: #e9ecef;
-        }
-
         /* لودینگ */
         .loading {
             display: none;
             margin: 15px auto;
             text-align: center;
+            background: var(--light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
 
         .loading-spinner {
@@ -380,6 +316,22 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        /* پیام موفقیت */
+        .success-message {
+            display: none;
+            margin: 15px auto;
+            text-align: center;
+            background: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            max-width: 400px;
         }
 
         /* رسپانسیو برای تبلت */
@@ -469,17 +421,6 @@
                 padding: 12px;
                 margin-top: 15px;
             }
-
-            table th,
-            table td {
-                padding: 8px;
-                font-size: 12px;
-            }
-
-            #popup .content {
-                padding: 15px;
-                margin: 10px;
-            }
         }
 
         /* رسپانسیو برای موبایل‌های کوچک */
@@ -533,26 +474,14 @@
                 font-size: 13px;
             }
 
-            table th,
-            table td {
-                padding: 6px;
-                font-size: 11px;
-            }
-
-            #popup .content {
-                padding: 10px;
+            .success-message {
+                font-size: 14px;
+                padding: 12px;
             }
 
             .divider {
                 width: 90%;
                 margin: 15px auto;
-            }
-
-            /* بهبود نمایش جدول در موبایل‌های کوچک */
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
             }
         }
 
@@ -591,7 +520,6 @@
 <body>
     <!-- داشبورد -->
     <div id="dashboard">
-        <!--      <h2>کاربر</h2>  -->
         <div class="avatar">
             <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar">
         </div>
@@ -599,7 +527,6 @@
             <p class="username">نام کاربر</p>
             <p class="phone">شماره موبایل</p>
         </div>
-        <!-- ✅ دکمه خروج -->
         <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
             🔴 خروج
         </button>
@@ -611,32 +538,24 @@
         <div id="factory-container">
             <div class="loading" id="factoryLoading">
                 <div class="loading-spinner"></div>
-                <p>...در حال بارگذاری واحد های اصلی</p>
+                <p>...در حال بارگذاری واحدهای اصلی</p>
             </div>
         </div>
-        <hr class="divider" id="factoryDivider" style="display:none;"> <!-- ⬅️ خط جداکننده -->
+        <hr class="divider" id="factoryDivider" style="display:none;">
         <div id="area-container"></div>
-        <div id="questions-container"></div>
-    </div>
-
-    <!-- popup -->
-    <div id="popup">
-        <div class="content">
-            <h3>پیش‌نمایش ارزیابی</h3>
-            <div id="summary"></div>
-
-            <div class="loading" id="submitLoading">
+        <div id="questions-container">
+            <div class="loading" id="submitLoading" style="display: none;">
                 <div class="loading-spinner"></div>
                 <p>در حال ثبت اطلاعات...</p>
             </div>
-
-            <button class="btn" id="submitBtn" onclick="finalSubmit()">ثبت نهایی ارزیابی</button>
-            <button class="btn btn-danger" onclick="closePopup()">انصراف</button>
+            <div class="success-message" id="successMessage" style="display: none;">
+                اطلاعات با موفقیت ذخیره شدند ✅
+            </div>
         </div>
     </div>
 
     <script>
-        //خواندن و نمایش نام در داشبورد
+        // خواندن و نمایش نام در داشبورد
         document.addEventListener("DOMContentLoaded", () => {
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
@@ -652,7 +571,7 @@
         let selectedArea = "";
 
         async function loadData() {
-            document.getElementById("factoryLoading").style.display = "block"; // ⬅️ نمایش لودینگ
+            document.getElementById("factoryLoading").style.display = "block";
             const res = await fetch(sheetUrl);
             const text = await res.text();
             const delimiter = text.includes(";") ? ";" : ",";
@@ -663,8 +582,8 @@
 
         function renderFactories() {
             const container = document.getElementById("factory-container");
-            document.getElementById("factoryLoading").style.display = "none"; // ⬅️ مخفی کردن لودینگ
-            container.innerHTML = ""; // پاک کردن محتوا بعد از لودینگ
+            document.getElementById("factoryLoading").style.display = "none";
+            container.innerHTML = "";
             container.style.display = "flex";
             const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
             factories.forEach(factory => {
@@ -680,10 +599,8 @@
             });
         }
 
-
         function renderAreas(factory) {
-            document.getElementById("factoryDivider").style.display = "block"; // ⬅️ نمایش خط جداکننده
-
+            document.getElementById("factoryDivider").style.display = "block";
             const container = document.getElementById("area-container");
             const qContainer = document.getElementById("questions-container");
 
@@ -705,7 +622,6 @@
             });
         }
 
-
         function renderQuestions(factory, area) {
             const container = document.getElementById("questions-container");
             container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
@@ -714,22 +630,21 @@
                 const qDiv = document.createElement("div");
                 qDiv.className = "question";
                 qDiv.innerHTML = `
-          <p>${row[4]} (وزن: ${row[5]})</p>
-          <input type="number" min="0" max="5"
-       data-qno="${row[2]}"
-       data-category="${row[3]}"
-       data-question="${row[4]}"
-       data-weight="${row[5]}"
-       oninput="nextFocus(this, ${index})">
-
-        `;
+                    <p>${row[4]} (وزن: ${row[5]})</p>
+                    <input type="number" min="0" max="5"
+                        data-qno="${row[2]}"
+                        data-category="${row[3]}"
+                        data-question="${row[4]}"
+                        data-weight="${row[5]}"
+                        oninput="nextFocus(this, ${index})">
+                `;
                 container.appendChild(qDiv);
             });
 
             container.innerHTML += `
-        <div id="result">جمع امتیاز واحد: 0</div>
-        <button class="btn" onclick="showPopup()">ثبت ارزیابی</button>
-      `;
+                <div id="result">جمع امتیاز واحد: 0</div>
+                <button class="btn" onclick="confirmSubmit()">ثبت ارزیابی</button>
+            `;
         }
 
         function nextFocus(input, index) {
@@ -757,28 +672,19 @@
             document.getElementById("result").textContent = "جمع امتیاز: " + "%" + total.toFixed(2);
         }
 
-        function showPopup() {
-            const inputs = document.querySelectorAll("#questions-container input");
-            let html = "<table><tr><th>سوال</th><th>امتیاز</th></tr>";
-            inputs.forEach(inp => {
-                html += `<tr><td>${inp.dataset.question}</td><td>${inp.value || "-"}</td></tr>`;
-            });
-            html += "</table>";
-            html += `<p><strong>${document.getElementById("result").textContent}</strong></p>`;
-            document.getElementById("summary").innerHTML = html;
-            document.getElementById("popup").style.display = "flex";
-        }
-
-        function closePopup() {
-            document.getElementById("popup").style.display = "none";
+        function confirmSubmit() {
+            const confirmed = confirm("آیا از ذخیره امتیازات اطمینان دارید؟");
+            if (confirmed) {
+                finalSubmit();
+            }
         }
 
         async function finalSubmit() {
-            // نمایش لودینگ و مخفی کردن دکمه
+            // نمایش لودینگ
             document.getElementById("submitLoading").style.display = "block";
-            document.getElementById("submitBtn").style.display = "none";
+            document.querySelector("#questions-container .btn").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec"; // جایگزین کن
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec";
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -797,39 +703,42 @@
                     weight: inp.dataset.weight || "1",
                     score: inp.value || "0"
                 });
-
             });
 
-            // بسته‌بندی به صورت application/x-www-form-urlencoded (بدون preflight)
             const params = new URLSearchParams();
             params.append('rows', JSON.stringify(rows));
-            // اختیاری: params.append('key','MY_SECRET'); // اگر می‌خواهی یک کلید امنیتی هم بفرستی
 
             try {
                 const res = await fetch(WEBAPP_URL, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded" // بسیار مهم — باعث جلوگیری از preflight می‌شود
+                        "Content-Type": "application/x-www-form-urlencoded"
                     },
                     body: params.toString(),
-                    mode: "cors" // خوب است صریح بنویسیم
+                    mode: "cors"
                 });
 
                 const text = await res.text();
-                // سرور ما JSON جواب می‌دهد؛ تلاش برای پارس کردن
                 try {
                     const data = JSON.parse(text);
                     if (data.result === "success") {
-                        alert("امتیازها با موفقیت ذخیره شدند ✅");
-                        closePopup();
+                        document.getElementById("submitLoading").style.display = "none";
+                        document.getElementById("successMessage").style.display = "block";
+                        setTimeout(() => {
+                            document.getElementById("successMessage").style.display = "none";
+                            document.querySelector("#questions-container .btn").style.display = "block";
+                        }, 3000);
                     } else {
                         alert("خطا در ذخیره‌سازی: " + (data.message || text));
                     }
                 } catch (e) {
-                    // اگر سرور فقط "OK" برگرداند
                     if (text.trim().toUpperCase() === "OK") {
-                        alert("امتیازها با موفقیت ذخیره شدند ✅");
-                        closePopup();
+                        document.getElementById("submitLoading").style.display = "none";
+                        document.getElementById("successMessage").style.display = "block";
+                        setTimeout(() => {
+                            document.getElementById("successMessage").style.display = "none";
+                            document.querySelector("#questions-container .btn").style.display = "block";
+                        }, 3000);
                     } else {
                         alert("پاسخ نامشخص از سرور: " + text);
                     }
@@ -837,13 +746,10 @@
             } catch (err) {
                 alert("خطا در ارسال به سرور: " + err);
             } finally {
-                // در هر صورت مخفی کردن لودینگ و نمایش دکمه
                 document.getElementById("submitLoading").style.display = "none";
-                document.getElementById("submitBtn").style.display = "block";
+                document.querySelector("#questions-container .btn").style.display = "block";
             }
         }
-
-        loadData();
 
         function highlightSelection(container, activeBtn) {
             const buttons = container.querySelectorAll(".btn");
@@ -857,6 +763,8 @@
                 }
             });
         }
+
+        loadData();
     </script>
 </body>
 
