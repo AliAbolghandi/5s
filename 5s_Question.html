@@ -12,6 +12,7 @@
             --primary-dark: #3a56d4;
             --secondary: #7209b7;
             --success: #06d6a0;
+            --success2: #d60629;
             --danger: #ef476f;
             --warning: #ffd166;
             --light: #f8f9fa;
@@ -52,6 +53,7 @@
             align-items: center;
             box-shadow: var(--box-shadow);
             flex-wrap: nowrap;
+            text-align: center;
             /* جلوگیری از شکستن خط */
         }
 
@@ -116,13 +118,13 @@
         }
 
         #dashboard .username {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             margin: 0 0 5px 0;
         }
 
         #dashboard .phone {
-            font-size: 14px;
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.8);
         }
 
@@ -308,6 +310,34 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 10px;
         }
+
+        .score-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .score-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .score-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .score-btn.selected {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
 
         @keyframes spin {
             0% {
@@ -512,7 +542,7 @@
     <div id="dashboard">
         <!--      <h2>کاربر</h2>  -->
         <div class="avatar">
-            <img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Avatar">
+            <img src="/img/icon-150-150.png" alt="User Avatar">
         </div>
         <div class="user-info">
             <p class="username">نام کاربر</p>
@@ -547,8 +577,8 @@
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const phone = localStorage.getItem("phone") || "شماره موبایل";
 
-            document.querySelector("#dashboard .username").textContent = name + " " + family;
-            document.querySelector("#dashboard .phone").textContent = phone;
+            document.querySelector("#dashboard .username").textContent = name + " " + family + " " + "عزیز خوش آمدید ";
+            document.querySelector("#dashboard .phone").textContent = "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
         });
 
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?output=csv";
@@ -619,29 +649,33 @@
                 const qDiv = document.createElement("div");
                 qDiv.className = "question";
                 qDiv.innerHTML = `
-          <p>${row[4]} (وزن: ${row[5]})</p>
-          <input type="number" min="0" max="5"
+  <p>${row[4]} (وزن: ${row[5]})</p>
+  <div class="score-options" 
        data-qno="${row[2]}"
        data-category="${row[3]}"
        data-question="${row[4]}"
        data-weight="${row[5]}"
-       oninput="nextFocus(this, ${index})">
+       data-score="">
+       ${[0, 1, 2, 3, 4, 5].map(num =>
+                    `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
+                ).join("")}
+  </div>
+`;
 
-        `;
                 container.appendChild(qDiv);
             });
 
             container.innerHTML += `
-    <div id="result">جمع امتیاز واحد: 0</div>
-    <button class="btn" id="submitBtn" onclick="confirmSubmit()">ثبت ارزیابی</button>
-    <div class="loading" id="submitLoading" style="display:none;">
-        <div class="loading-spinner"></div>
-        <p>در حال ثبت اطلاعات...</p>
-    </div>
-    <div id="successMessage" style="display:none; background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
-        ✅ اطلاعات با موفقیت ذخیره شدند
-    </div>
-`;
+         <div id="result">جمع امتیاز واحد: 0</div>
+            <button class="btn" id="submitBtn" onclick="confirmSubmit()">ثبت ارزیابی</button>
+         <div class="loading" id="submitLoading" style="display:none;">
+                <div class="loading-spinner"></div>
+                    <p>در حال ثبت اطلاعات...</p>
+                </div>
+                 <div id="successMessage" style="display:none; background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                     ✅ اطلاعات با موفقیت ذخیره شدند
+                 </div>
+        `;
 
         }
 
@@ -660,15 +694,16 @@
         }
 
         function updateResult() {
-            const inputs = document.querySelectorAll("#questions-container input");
+            const qDivs = document.querySelectorAll(".score-options");
             let total = 0;
-            inputs.forEach(inp => {
-                const val = parseFloat(inp.value) || 0;
-                const w = parseFloat(inp.dataset.weight) || 1;
+            qDivs.forEach(div => {
+                const val = parseFloat(div.dataset.score) || 0;
+                const w = parseFloat(div.dataset.weight) || 1;
                 total += (val * w) / 5;
             });
-            document.getElementById("result").textContent = "جمع امتیاز: " + "%" + total.toFixed(2);
+            document.getElementById("result").textContent = "جمع امتیاز: %" + total.toFixed(2);
         }
+
 
 
         async function finalSubmit() {
@@ -682,21 +717,20 @@
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
 
-            const inputs = document.querySelectorAll("#questions-container input");
-            const rows = [];
-
-            inputs.forEach(inp => {
+            const qDivs = document.querySelectorAll(".score-options");
+            qDivs.forEach(div => {
                 rows.push({
                     user: user,
                     factory: selectedFactory,
                     area: selectedArea,
-                    qno: inp.dataset.qno || "",
-                    category: inp.dataset.category || "",
-                    question: inp.dataset.question || "",
-                    weight: inp.dataset.weight || "1",
-                    score: inp.value || "0"
+                    qno: div.dataset.qno || "",
+                    category: div.dataset.category || "",
+                    question: div.dataset.question || "",
+                    weight: div.dataset.weight || "1",
+                    score: div.dataset.score || "0"
                 });
             });
+
 
             // بسته‌بندی به صورت application/x-www-form-urlencoded
             const params = new URLSearchParams();
@@ -721,10 +755,10 @@
                         // ریست فرم یا غیرفعال کردن دکمه برای جلوگیری از ثبت مجدد
                         document.getElementById("questions-container").innerHTML = `
                     <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
-                    <div id="successMessage" style="background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                    <div id="successMessage" style="background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
                         ✅ اطلاعات با موفقیت ذخیره شدند
                     </div>
-                    <button class="btn" onclick="resetForm()">بازگشت به انتخاب واحد</button>
+                    
                 `;
                     } else {
                         throw new Error(data.message || "خطا در ذخیره‌سازی اطلاعات");
@@ -735,7 +769,7 @@
                         document.getElementById("successMessage").style.display = "block";
                         document.getElementById("questions-container").innerHTML = `
                     <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
-                    <div id="successMessage" style="background: var(--success); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                    <div id="successMessage" style="background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
                         ✅ اطلاعات با موفقیت ذخیره شدند
                     </div>
                     <button class="btn" onclick="resetForm()">بازگشت به انتخاب واحد</button>
@@ -782,6 +816,33 @@
             document.getElementById("factoryDivider").style.display = "none";
             renderFactories();
         }
+
+        // 6 گزینه امتیاز دهی
+        function selectScore(btn, score) {
+            const parent = btn.parentElement; // div.score-options
+            parent.dataset.score = score; // ذخیره انتخاب
+
+            // ریست دکمه‌ها
+            parent.querySelectorAll(".score-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+
+            updateResult();
+
+            // پیدا کردن سوال بعدی
+            const allQuestions = Array.from(document.querySelectorAll(".score-options"));
+            const currentIndex = allQuestions.indexOf(parent);
+
+            if (currentIndex !== -1 && currentIndex + 1 < allQuestions.length) {
+                // فوکوس روی اولین دکمه سوال بعدی
+                const nextQuestion = allQuestions[currentIndex + 1];
+                const firstBtn = nextQuestion.querySelector(".score-btn");
+                if (firstBtn) {
+                    firstBtn.focus();
+                }
+            }
+        }
+
+
 
 
 
