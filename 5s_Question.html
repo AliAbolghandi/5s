@@ -649,18 +649,18 @@
                 const qDiv = document.createElement("div");
                 qDiv.className = "question";
                 qDiv.innerHTML = `
-  <p>${row[4]} (وزن: ${row[5]})</p>
-  <div class="score-options" 
-       data-qno="${row[2]}"
-       data-category="${row[3]}"
-       data-question="${row[4]}"
-       data-weight="${row[5]}"
-       data-score="">
-       ${[0, 1, 2, 3, 4, 5].map(num =>
-                    `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
-                ).join("")}
-  </div>
-`;
+                <p>${row[4]} (وزن: ${row[5]})</p>
+                  <div class="score-options" 
+                    data-qno="${row[2]}"
+                    data-category="${row[3]}"
+                    data-question="${row[4]}"
+                    data-weight="${row[5]}"
+                    data-score="">
+                    ${[0, 1, 2, 3, 4, 5].map(num =>
+                                    `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
+                                ).join("")}
+                </div>
+                `;
 
                 container.appendChild(qDiv);
             });
@@ -717,6 +717,8 @@
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
 
+            let rows = [];
+            
             const qDivs = document.querySelectorAll(".score-options");
             qDivs.forEach(div => {
                 rows.push({
@@ -818,28 +820,16 @@
         }
 
         // 6 گزینه امتیاز دهی
-        function selectScore(btn, score) {
+         function selectScore(btn, score) {
             const parent = btn.parentElement; // div.score-options
             parent.dataset.score = score; // ذخیره انتخاب
 
-            // ریست دکمه‌ها
+            // دکمه‌ها رو ریست کن
             parent.querySelectorAll(".score-btn").forEach(b => b.classList.remove("selected"));
+            // دکمه انتخاب‌شده رو فعال کن
             btn.classList.add("selected");
 
             updateResult();
-
-            // پیدا کردن سوال بعدی
-            const allQuestions = Array.from(document.querySelectorAll(".score-options"));
-            const currentIndex = allQuestions.indexOf(parent);
-
-            if (currentIndex !== -1 && currentIndex + 1 < allQuestions.length) {
-                // فوکوس روی اولین دکمه سوال بعدی
-                const nextQuestion = allQuestions[currentIndex + 1];
-                const firstBtn = nextQuestion.querySelector(".score-btn");
-                if (firstBtn) {
-                    firstBtn.focus();
-                }
-            }
         }
 
 
