@@ -338,6 +338,27 @@
             border-color: var(--success);
         }
 
+        .desc-box {
+            width: 100%;
+            min-height: 60px;
+            resize: none;
+            margin-top: 10px;
+            padding: 10px;
+            font-family: 'Yekan', sans-serif;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .desc-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+
 
         @keyframes spin {
             0% {
@@ -657,9 +678,11 @@
                     data-weight="${row[5]}"
                     data-score="">
                     ${[0, 1, 2, 3, 4, 5].map(num =>
-                                    `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
-                                ).join("")}
+                    `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
+                ).join("")}
                 </div>
+                <textarea class="desc-box" placeholder="اگر توضیحاتی وجود داره بنویسید"></textarea>
+
                 `;
 
                 container.appendChild(qDiv);
@@ -710,7 +733,7 @@
             // نمایش لودینگ و مخفی کردن دکمه
             document.getElementById("submitLoading").style.display = "block";
             document.getElementById("submitBtn").style.display = "none";
-            document.getElementById("successMessage").style.display = "none"; // اطمینان از مخفی بودن پیام موفقیت
+            document.getElementById("successMessage").style.display = "none";
 
             const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec";
             const name = localStorage.getItem("name") || "نام";
@@ -718,74 +741,60 @@
             const user = name + " " + family;
 
             let rows = [];
-            
+
             const qDivs = document.querySelectorAll(".score-options");
             qDivs.forEach(div => {
+                // توضیح مربوط به هر سوال
+                const descEl = div.parentElement.querySelector(".desc-box");
+                const desc = descEl ? descEl.value.trim() : "";
+
                 rows.push({
                     user: user,
                     factory: selectedFactory,
                     area: selectedArea,
                     qno: div.dataset.qno || "",
                     category: div.dataset.category || "",
-                    question: div.dataset.question || "",
+                    // ⬅️ فقط توضیح ارسال می‌شود، اگر خالی بود مقدارش ""
+                    question: desc,
                     weight: div.dataset.weight || "1",
                     score: div.dataset.score || "0"
                 });
             });
 
-
-            // بسته‌بندی به صورت application/x-www-form-urlencoded
+            // آماده‌سازی برای ارسال
             const params = new URLSearchParams();
             params.append('rows', JSON.stringify(rows));
 
             try {
                 const res = await fetch(WEBAPP_URL, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: params.toString(),
                     mode: "cors"
                 });
 
                 const text = await res.text();
-                try {
-                    const data = JSON.parse(text);
-                    if (data.result === "success") {
-                        document.getElementById("submitLoading").style.display = "none";
-                        document.getElementById("successMessage").style.display = "block";
-                        // ریست فرم یا غیرفعال کردن دکمه برای جلوگیری از ثبت مجدد
-                        document.getElementById("questions-container").innerHTML = `
-                    <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
-                    <div id="successMessage" style="background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
-                        ✅ اطلاعات با موفقیت ذخیره شدند
-                    </div>
-                    
-                `;
-                    } else {
-                        throw new Error(data.message || "خطا در ذخیره‌سازی اطلاعات");
-                    }
-                } catch (e) {
-                    if (text.trim().toUpperCase() === "OK") {
-                        document.getElementById("submitLoading").style.display = "none";
-                        document.getElementById("successMessage").style.display = "block";
-                        document.getElementById("questions-container").innerHTML = `
-                    <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
-                    <div id="successMessage" style="background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
-                        ✅ اطلاعات با موفقیت ذخیره شدند
-                    </div>
-                    <button class="btn" onclick="resetForm()">بازگشت به انتخاب واحد</button>
-                `;
-                    } else {
-                        throw new Error("پاسخ نامشخص از سرور: " + text);
-                    }
+
+                // بررسی پاسخ سرور
+                if (text.trim().toUpperCase() === "OK" || text.includes("success")) {
+                    document.getElementById("submitLoading").style.display = "none";
+                    document.getElementById("successMessage").style.display = "block";
+                    document.getElementById("questions-container").innerHTML = `
+                <h3>سوالات ${selectedArea} - ${selectedFactory}</h3>
+                <div id="successMessage" style="background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+                    ✅ اطلاعات با موفقیت ذخیره شدند
+                </div>
+            `;
+                } else {
+                    throw new Error("پاسخ نامشخص از سرور: " + text);
                 }
             } catch (err) {
                 alert("خطا در ارسال به سرور: " + err.message);
                 document.getElementById("submitLoading").style.display = "none";
-                document.getElementById("submitBtn").style.display = "block"; // نمایش دوباره دکمه در صورت خطا
+                document.getElementById("submitBtn").style.display = "block";
             }
         }
+
 
         loadData();
 
@@ -820,7 +829,7 @@
         }
 
         // 6 گزینه امتیاز دهی
-         function selectScore(btn, score) {
+        function selectScore(btn, score) {
             const parent = btn.parentElement; // div.score-options
             parent.dataset.score = score; // ذخیره انتخاب
 
@@ -831,6 +840,12 @@
 
             updateResult();
         }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
 
 
 
