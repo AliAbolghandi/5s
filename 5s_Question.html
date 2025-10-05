@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    
+
     <title>ارزیابی 5S مجتمع فولاد روهینا جنوب</title>
     <style>
         :root {
@@ -22,7 +22,7 @@
             --primary-dark: #3a56d4;
             --secondary: #7209b7;
             --success: #06d6a0;
-            --success2: #d60629;
+            --success2: #06d6ba;
             --danger: #ef476f;
             --warning: #ffd166;
             --light: #f8f9fa;
@@ -862,6 +862,14 @@
 
 
     </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker ثبت شد'))
+                .catch(err => console.error('ثبت Service Worker شکست خورد:', err));
+        }
+    </script>
+
 </body>
 
 </html>
