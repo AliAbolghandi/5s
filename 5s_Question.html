@@ -356,7 +356,7 @@
             padding: 10px;
             font-family: 'Yekan', sans-serif;
             font-size: 12px;
-            border: 1px solid #ccc;
+            border: 1px solid #888888;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
@@ -367,6 +367,82 @@
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
             outline: none;
         }
+
+
+        .modal {
+            padding-top: 200px;
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background-color: rgba(0, 0, 0, 0.5);
+
+        }
+
+        .modal-content {
+            background: #fff;
+            margin: 15% auto;
+            padding: 20px 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-family: 'Yekan', sans-serif;
+            font-size: 14px;
+        }
+
+        .close-btn {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Yekan', sans-serif;
+        }
+
+        .close-btn:hover {
+            background-color: #1565c0;
+        }
+
+        .user-info .survey-end-date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Yekan', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .user-info .survey-end-date:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .user-info .survey-end-date .label {
+            color: #ffe680;
+            font-weight: 600;
+        }
+
+        .user-info .survey-end-date .value {
+            color: #ffffff;
+            font-family: "IRANSansXFaNum", "Vazirmatn", sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
 
 
 
@@ -403,6 +479,8 @@
             #main {
                 padding: 15px;
             }
+
+            
         }
 
         /* رسپانسیو برای موبایل */
@@ -468,6 +546,15 @@
                 margin-top: 15px;
             }
 
+            .user-info .survey-end-date {
+                font-size: 11px;
+
+            }
+
+            .user-info .survey-end-date .value {
+                font-size: 12px;
+            }
+
 
         }
 
@@ -487,11 +574,11 @@
             }
 
             #dashboard .username {
-                font-size: 14px;
+                font-size: 12px;
             }
 
             #dashboard .phone {
-                font-size: 9px;
+                font-size: 11px;
             }
 
             #logoutBtn.btn-logout {
@@ -534,6 +621,15 @@
                 overflow-x: auto;
                 white-space: nowrap;
             }
+
+            .user-info .survey-end-date {
+                font-size: 10px;
+
+            }
+
+            .user-info .survey-end-date .value {
+                font-size: 10px;
+            }
         }
 
         /* برای نمایش بسیار کوچک (اضطراری) */
@@ -564,6 +660,15 @@
                 font-size: 10px;
                 margin-left: 8px;
             }
+
+            .user-info .survey-end-date {
+                font-size: 8px;
+
+            }
+
+            .user-info .survey-end-date .value {
+                font-size: 8px;
+            }
         }
     </style>
 </head>
@@ -578,6 +683,13 @@
         <div class="user-info">
             <p class="username">نام کاربر</p>
             <p class="phone">شماره موبایل</p>
+            <div id="survey-end-date" class="survey-end-date">
+                <span class="value" id="b2-date">—</span>
+                <span class="label">:تاریخ پایان نظر سنجی</span>
+
+            </div>
+
+
         </div>
         <!-- ✅ دکمه خروج -->
         <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
@@ -599,8 +711,17 @@
         <div id="questions-container"></div>
     </div>
 
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <h3>توجه</h3>
+            <p id="modalMessage"></p>
+            <button class="close-btn" onclick="closeModal()">باشه</button>
+        </div>
+    </div>
 
 
+
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.min.js"></script>
     <script>
         //خواندن و نمایش نام در داشبورد
         document.addEventListener("DOMContentLoaded", () => {
@@ -612,20 +733,126 @@
             document.querySelector("#dashboard .phone").textContent = "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
         });
 
-        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?output=csv";
+        const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=0&single=true&output=csv";
+        const sheetUrlAdmin = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=297000617&single=true&output=csv";
+
         let data = [];
         let selectedFactory = "";
         let selectedArea = "";
 
+        // async function checkB2() {
+        //     const res = await fetch(sheetUrlAdmin);
+        //     const text = await res.text();
+        //     const delimiter = text.includes(";") ? ";" : ",";
+        //     const rows = text.split("\n");
+        //     console.log("Rows:", rows);
+        //     const b2 = rows[1].split(delimiter)[1].trim();
+        //     console.log("B2:", b2);
+        // }
+        // checkB2();
+
+
+
+
         async function loadData() {
-            document.getElementById("factoryLoading").style.display = "block"; // ⬅️ نمایش لودینگ
-            const res = await fetch(sheetUrl);
-            const text = await res.text();
-            const delimiter = text.includes(";") ? ";" : ",";
-            const rows = text.split("\n").slice(1);
-            data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
-            renderFactories();
+            try {
+                document.getElementById("factoryLoading").style.display = "block"; // نمایش لودینگ
+
+                // 1️⃣ خواندن B2 از شیت admin
+                const resAdmin = await fetch(sheetUrlAdmin);
+                const textAdmin = await resAdmin.text();
+                const delimiterAdmin = textAdmin.includes(";") ? ";" : ",";
+                const rowsAdmin = textAdmin.split("\n");
+                const b2 = rowsAdmin[1].split(delimiterAdmin)[1].trim(); // admin sheet: B2 ردیف 2 ستون 2
+
+
+
+                if (!b2 || !/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(b2)) {
+                    showModal("تاریخ نظرسنجی نامعتبراست. لطفا به مدیریت شبکه اطلاع دهید");
+                    document.getElementById("factoryLoading").style.display = "none";
+                    return;
+                }
+
+
+                // اصلاح فرمت تاریخ برای نمایش در داشبورد
+                let formattedB2 = b2;
+                const dateMatch = b2.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
+                if (dateMatch) {
+                    const year = dateMatch[1];
+                    const month = dateMatch[2].padStart(2, "0");
+                    const day = dateMatch[3].padStart(2, "0");
+                    formattedB2 = `${year}/${month}/${day}`;
+                }
+
+                // نمایش تاریخ پایان نظر سنجی در داشبورد
+                const b2Element = document.getElementById("b2-date");
+                if (b2Element) {
+                    b2Element.textContent = formattedB2;
+                }
+
+                // 2️⃣ تاریخ امروز شمسی
+                const today = new Date();
+                const jToday = toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+                function toJalaali(gy, gm, gd) {
+                    const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+                    let gy2 = (gm > 2) ? (gy + 1) : gy;
+                    let days = 355666 + (365 * gy) + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400) + gd + g_d_m[gm - 1];
+                    let jy = -1595 + 33 * Math.floor(days / 12053);
+                    days %= 12053;
+                    jy += 4 * Math.floor(days / 1461);
+                    days %= 1461;
+                    if (days > 365) {
+                        jy += Math.floor((days - 1) / 365);
+                        days = (days - 1) % 365;
+                    }
+                    const jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+                    const jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+                    return { jy, jm, jd };
+                }
+
+                function dateToNumber(str) {
+                    const [y, m, d] = str.split("/").map(Number);
+                    return y * 10000 + m * 100 + d;
+                }
+
+                const todayNum = jToday.jy * 10000 + jToday.jm * 100 + jToday.jd;
+                const b2Num = dateToNumber(b2);
+
+                // 3️⃣ مقایسه و لود داده‌ها
+                if (todayNum <= b2Num) {
+                    const res = await fetch(sheetUrlQuestion);
+                    const text = await res.text();
+                    const delimiter = text.includes(";") ? ";" : ",";
+                    const rows = text.split("\n").slice(1);
+                    data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
+                    renderFactories();
+                } else {
+                    showModal("زمان امتیاز دهی به اتمام رسیده است"); // ✅ جایگزین alert
+                }
+
+                document.getElementById("factoryLoading").style.display = "none";
+
+            } catch (err) {
+                console.error("خطا در لود داده‌ها:", err);
+                document.getElementById("factoryLoading").style.display = "none";
+            }
         }
+
+        function showModal(message) {
+            document.getElementById("modalMessage").textContent = message;
+            document.getElementById("alertModal").style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById("alertModal").style.display = "none";
+        }
+
+
+
+
+
+
+
 
         function renderFactories() {
             const container = document.getElementById("factory-container");
@@ -745,7 +972,7 @@
             document.getElementById("submitBtn").style.display = "none";
             document.getElementById("successMessage").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5MYAgJ3izvKxOhQoGTohOHtnWj411d5YyH5WcEVUZaaEMEfedRT2__xLeP24YaINE/exec";
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzTOCgbnIs-0WW3eNffLSDlJSwMmEW8U_PefqtnnT3vDSmXb2jF-OK_us6rQpB4OTj9/exec";
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -764,10 +991,10 @@
                     area: selectedArea,
                     qno: div.dataset.qno || "",
                     category: div.dataset.category || "",
-                    // ⬅️ فقط توضیح ارسال می‌شود، اگر خالی بود مقدارش ""
-                    question: desc,
+                    question: div.dataset.question || "" ,
                     weight: div.dataset.weight || "1",
-                    score: div.dataset.score || "0"
+                    score: div.dataset.score || "0",
+                    description: desc
                 });
             });
 
@@ -859,10 +1086,6 @@
 
 
 
-
-
-    </script>
-    <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
                 .then(() => console.log('Service Worker ثبت شد'))
