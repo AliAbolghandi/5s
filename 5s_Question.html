@@ -685,7 +685,7 @@
             <p class="phone">شماره موبایل</p>
             <div id="survey-end-date" class="survey-end-date">
                 <span class="value" id="b2-date">—</span>
-                <span class="label">:تاریخ پایان نظر سنجی</span>
+                <span class="label">:تاریخ پایان ارزیابی </span>
 
             </div>
 
@@ -768,7 +768,7 @@
 
 
                 if (!b2 || !/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(b2)) {
-                    showModal("تاریخ نظرسنجی نامعتبراست. لطفا به مدیریت شبکه اطلاع دهید");
+                    showModal("تاریخ ارزیابی نامعتبراست. لطفا به مدیریت شبکه اطلاع دهید");
                     document.getElementById("factoryLoading").style.display = "none";
                     return;
                 }
@@ -784,7 +784,7 @@
                     formattedB2 = `${year}/${month}/${day}`;
                 }
 
-                // نمایش تاریخ پایان نظر سنجی در داشبورد
+                // نمایش تاریخ پایان ارزیابی در داشبورد
                 const b2Element = document.getElementById("b2-date");
                 if (b2Element) {
                     b2Element.textContent = formattedB2;
@@ -828,7 +828,7 @@
                     data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
                     renderFactories();
                 } else {
-                    showModal("زمان نظر سنجی به پایان رسیده است"); // ✅ جایگزین alert
+                    showModal("زمان ارزیابی به پایان رسیده است"); 
                 }
 
                 document.getElementById("factoryLoading").style.display = "none";
