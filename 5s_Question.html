@@ -425,10 +425,7 @@
             transition: background 0.3s ease, transform 0.2s ease;
         }
 
-        .user-info .survey-end-date:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-2px);
-        }
+
 
         .user-info .survey-end-date .label {
             color: #ffe680;
@@ -437,7 +434,7 @@
 
         .user-info .survey-end-date .value {
             color: #ffffff;
-            font-family: "IRANSansXFaNum", "Vazirmatn", sans-serif;
+            font-family: 'Yekan', sans-serif;
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 1px;
@@ -480,7 +477,7 @@
                 padding: 15px;
             }
 
-            
+
         }
 
         /* رسپانسیو برای موبایل */
@@ -684,7 +681,7 @@
             <p class="username">نام کاربر</p>
             <p class="phone">شماره موبایل</p>
             <div id="survey-end-date" class="survey-end-date">
-                <span class="value" id="b2-date">—</span>
+                <span class="value" id="TrikhArzyabiEnd-date">—</span>
                 <span class="label">:تاریخ پایان ارزیابی </span>
 
             </div>
@@ -740,54 +737,73 @@
         let selectedFactory = "";
         let selectedArea = "";
 
-        // async function checkB2() {
+        // async function checkTrikhArzyabiEnd() {
         //     const res = await fetch(sheetUrlAdmin);
         //     const text = await res.text();
         //     const delimiter = text.includes(";") ? ";" : ",";
         //     const rows = text.split("\n");
         //     console.log("Rows:", rows);
-        //     const b2 = rows[1].split(delimiter)[1].trim();
-        //     console.log("B2:", b2);
+        //     const TrikhArzyabiEnd = rows[1].split(delimiter)[1].trim();
+        //     console.log("TrikhArzyabiEnd:", TrikhArzyabiEnd);
         // }
-        // checkB2();
+        // checkTrikhArzyabiEnd();
 
 
+        let TarikhBazdid = "";
+        let TrikhArzyabi = "";
 
 
         async function loadData() {
             try {
                 document.getElementById("factoryLoading").style.display = "block"; // نمایش لودینگ
 
-                // 1️⃣ خواندن B2 از شیت admin
+                // 1️⃣ خواندن آخرین ردیف پر از شیت admin
                 const resAdmin = await fetch(sheetUrlAdmin);
                 const textAdmin = await resAdmin.text();
                 const delimiterAdmin = textAdmin.includes(";") ? ";" : ",";
-                const rowsAdmin = textAdmin.split("\n");
-                const b2 = rowsAdmin[1].split(delimiterAdmin)[1].trim(); // admin sheet: B2 ردیف 2 ستون 2
+                const rowsAdmin = textAdmin.trim().split("\n").filter(r => r.trim() !== "");
+
+                // آخرین ردیف پر (به جز هدر)
+                const lastRow = rowsAdmin[rowsAdmin.length - 1].split(delimiterAdmin).map(c => c.trim());
 
 
 
-                if (!b2 || !/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(b2)) {
+                // ستون A = تاریخ بازدید
+                TarikhBazdid = lastRow[0] || "";
+                // ستون B = تاریخ پایان ارزیابی
+                TrikhArzyabi = lastRow[1] || "";
+
+                if (!TrikhArzyabi || !/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(TrikhArzyabi)) {
                     showModal("تاریخ ارزیابی نامعتبراست. لطفا به مدیریت شبکه اطلاع دهید");
                     document.getElementById("factoryLoading").style.display = "none";
                     return;
                 }
 
+                // ✳️ تابع تبدیل عدد انگلیسی به فارسی
+                function toPersianDigits(str) {
+                    return str.toString().replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+                }
 
                 // اصلاح فرمت تاریخ برای نمایش در داشبورد
-                let formattedB2 = b2;
-                const dateMatch = b2.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
+                let formattedTrikhArzyabi = TrikhArzyabi;
+                const dateMatch = TrikhArzyabi.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
                 if (dateMatch) {
                     const year = dateMatch[1];
                     const month = dateMatch[2].padStart(2, "0");
                     const day = dateMatch[3].padStart(2, "0");
-                    formattedB2 = `${year}/${month}/${day}`;
+                    formattedTrikhArzyabi = `${year}/${month}/${day}`;
                 }
 
-                // نمایش تاریخ پایان ارزیابی در داشبورد
-                const b2Element = document.getElementById("b2-date");
-                if (b2Element) {
-                    b2Element.textContent = formattedB2;
+                // ✳️ نمایش تاریخ‌ها به فارسی
+                const TrikhArzyabiElement = document.getElementById("TrikhArzyabiEnd-date");
+                if (TrikhArzyabiElement) {
+                    TrikhArzyabiElement.textContent = toPersianDigits(formattedTrikhArzyabi);
+                }
+
+                // نمایش تاریخ بازدید اگر در HTML المنت مخصوص دارد
+                const TarikhBazdidElement = document.getElementById("TarikhBazdid-date");
+                if (TarikhBazdidElement && TarikhBazdid) {
+                    TarikhBazdidElement.textContent = toPersianDigits(TarikhBazdid);
                 }
 
                 // 2️⃣ تاریخ امروز شمسی
@@ -797,7 +813,9 @@
                 function toJalaali(gy, gm, gd) {
                     const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
                     let gy2 = (gm > 2) ? (gy + 1) : gy;
-                    let days = 355666 + (365 * gy) + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400) + gd + g_d_m[gm - 1];
+                    let days = 355666 + (365 * gy) + Math.floor((gy + 3) / 4)
+                        - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400)
+                        + gd + g_d_m[gm - 1];
                     let jy = -1595 + 33 * Math.floor(days / 12053);
                     days %= 12053;
                     jy += 4 * Math.floor(days / 1461);
@@ -806,8 +824,10 @@
                         jy += Math.floor((days - 1) / 365);
                         days = (days - 1) % 365;
                     }
-                    const jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
-                    const jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+                    const jm = (days < 186) ? 1 + Math.floor(days / 31)
+                        : 7 + Math.floor((days - 186) / 30);
+                    const jd = 1 + ((days < 186) ? (days % 31)
+                        : ((days - 186) % 30));
                     return { jy, jm, jd };
                 }
 
@@ -817,10 +837,10 @@
                 }
 
                 const todayNum = jToday.jy * 10000 + jToday.jm * 100 + jToday.jd;
-                const b2Num = dateToNumber(b2);
+                const TrikhArzyabiNum = dateToNumber(TrikhArzyabi);
 
                 // 3️⃣ مقایسه و لود داده‌ها
-                if (todayNum <= b2Num) {
+                if (todayNum <= TrikhArzyabiNum) {
                     const res = await fetch(sheetUrlQuestion);
                     const text = await res.text();
                     const delimiter = text.includes(";") ? ";" : ",";
@@ -828,7 +848,7 @@
                     data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
                     renderFactories();
                 } else {
-                    showModal("زمان ارزیابی به پایان رسیده است"); 
+                    showModal("زمان ارزیابی در تاریخ " + toPersianDigits(TrikhArzyabi) + " به پایان رسیده است");
                 }
 
                 document.getElementById("factoryLoading").style.display = "none";
@@ -846,6 +866,8 @@
         function closeModal() {
             document.getElementById("alertModal").style.display = "none";
         }
+
+
 
 
 
@@ -972,7 +994,7 @@
             document.getElementById("submitBtn").style.display = "none";
             document.getElementById("successMessage").style.display = "none";
 
-            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzTOCgbnIs-0WW3eNffLSDlJSwMmEW8U_PefqtnnT3vDSmXb2jF-OK_us6rQpB4OTj9/exec";
+            const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI8Cr4J7gzdIFCHlXjCS90DiscpxNIjJWZa_2zRZ16B7SkFPVwGtWaH2y-1zUoLM_s/exec";
             const name = localStorage.getItem("name") || "نام";
             const family = localStorage.getItem("family") || "نام‌خانوادگی";
             const user = name + " " + family;
@@ -985,16 +1007,26 @@
                 const descEl = div.parentElement.querySelector(".desc-box");
                 const desc = descEl ? descEl.value.trim() : "";
 
+                if (!TarikhBazdid) {
+                    showModal("تاریخ بازدید مشخص نیست. لطفا صفحه را رفرش کنید.");
+                    document.getElementById("submitLoading").style.display = "none";
+                    document.getElementById("submitBtn").style.display = "block";
+                    return;
+                }
+
+
                 rows.push({
+                    tarikhBazdid: TarikhBazdid,
                     user: user,
                     factory: selectedFactory,
                     area: selectedArea,
                     qno: div.dataset.qno || "",
                     category: div.dataset.category || "",
-                    question: div.dataset.question || "" ,
+                    question: div.dataset.question || "",
                     weight: div.dataset.weight || "1",
                     score: div.dataset.score || "0",
-                    description: desc
+                    description: desc,
+
                 });
             });
 
