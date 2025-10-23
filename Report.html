@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>گزارش ارزیابی من</title>
+  <link rel="stylesheet" href="https://cdn.fontcdn.ir/Font/Yekan/Yekan.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #2944bb;
+      --secondary: #7209b7;
+      --success: #06d6a0;
+      --danger: #ef476f;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border-radius: 12px;
+      --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Yekan', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      /* padding: 20px; */
+      direction: rtl;
+    }
+
+    .dashboard {
+      width: 100%;
+      height: 50%;
+      /* max-width: 1000px; */
+      background: var(--primary);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      /* padding: 20px; */
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .user-avatar {
+      width: 20%;
+      height: 60px;
+      /* border-radius: 50%; */
+      /* border: 3px solid var(--primary); */
+      overflow: hidden;
+      /* background-color: #f0f0f0; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--light);
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .user-phone {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .menu-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--primary);
+      background: none;
+      border: none;
+    }
+
+    .btn-logout {
+      background: transparent;
+      
+      padding: 10px 10px 10px 20px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'Yekan', sans-serif;
+    }
+
+    .btn-logout:hover {
+      /* background: #d32f2f; */
+      transform: translatex( 2px);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--dark);
+      font-size: 22px;
+      margin-bottom: 15px;
+      position: relative;
+      width: 100%;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      right: 50%;
+      transform: translateX(50%);
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      border-radius: 3px;
+    }
+
+    #userInfo {
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    table {
+      width: 95%;
+      /* max-width: 1000px; */
+      border-collapse: collapse;
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background: linear-gradient(to top, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+      transition: var(--transition);
+    }
+
+    #loading {
+      text-align: center;
+      color: var(--primary);
+      margin-top: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* انیمیشن لودینگ */
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e9ecef;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 15px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* منوی همبرگری */
+    .side-menu {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      right: 0;
+      backdrop-filter: blur(12px);
+      background: rgba(55, 4, 138, 0.15);
+      box-shadow: -2px 0 15px rgba(2, 0, 0, 0.3);
+      border-left: 1px solid rgba(49, 8, 233, 0.3);
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 60px;
+      z-index: 1000;
+    }
+
+    .side-menu a {
+      padding: 12px 25px;
+      text-decoration: none;
+      color: #010002;
+      display: block;
+      transition: 0.2s;
+      font-size: 16px;
+    }
+
+    .side-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+
+    .side-menu p {
+      padding: 12px 25px;
+      text-decoration: none;
+      color: #010002;
+      display: block;
+      transition: 0.2s;
+      font-size: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    /* ریسپانسیو */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .dashboard {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 15px;
+      }
+
+      .user-info {
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      table {
+        font-size: 13px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      th,
+      td {
+        padding: 10px 8px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      #userInfo {
+        font-size: 13px;
+      }
+
+      .user-name {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 8px 6px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+
+      .dashboard {
+        padding: 12px;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+      }
+
+      .btn-logout {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- داشبورد کاربر -->
+  <div class="dashboard">
+    <div class="user-info">
+      <div class="user-avatar">
+        <!-- <img src="./img/icon-150-150.png" alt="User Avatar"> -->
+         <a> گزارش ارزیابی من</a>
+      </div>
+      <div class="user-details">
+        <!-- <div class="user-name" id="userFullName">نام کاربر</div> -->
+        <!-- <div class="user-phone" id="userPhone">شماره موبایل</div> -->
+      </div>
+    </div>
+
+    <div class="menu-container">
+
+      <!-- دکمه خروج -->
+      <button id="logoutBtn" class="btn-logout">
+        <img src="./img/icon/ic_Back.png" alt="توضیح تصویر" width="50" height="50">
+      </button>
+      <!-- دکمه همبرگری -->
+      <!-- <button id="menuButton" class="menu-btn">&#9776;</button>
+       -->
+    </div>
+  </div>
+
+  <!-- منو همبرگری -->
+  <div id="sideMenu" class="side-menu">
+    <p>__________</p>
+    <a href="report.html">گزارش ارزیابی من</a>
+    <a id="logout" href="index.html">خروج</a>
+  </div>
+
+  <!-- <h2>📋 گزارش ارزیابی من</h2> -->
+  <div id="userInfo"></div>
+
+  <div id="loading">
+    <div class="loading-spinner"></div>
+    در حال بارگذاری اطلاعات...
+  </div>
+
+  <table id="gradesTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ردیف</th>
+        <th>تاریخ گشت</th>
+        <th>تاریخ امتیازدهی</th>
+        <th>واحد اصلی</th>
+        <th>قسمت</th>
+        <th>مجموع امتیاز (%)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script>
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbwyI0Cl44E7A1VDslBgbLo0DnTQcxfQ32MR8xXRMF_M-V6Q5YvlNyGXFGc10HQwJIA/exec";
+
+    // بارگذاری اطلاعات کاربر
+    document.addEventListener("DOMContentLoaded", () => {
+      const name = localStorage.getItem("name") || "";
+      const family = localStorage.getItem("family") || "";
+      const phone = localStorage.getItem("phone") || "";
+      const user = `${name} ${family}`.trim();
+
+      document.getElementById("userFullName").textContent = user || "نام کاربر";
+      document.getElementById("userPhone").textContent = phone || "شماره موبایل";
+      document.getElementById("userInfo").textContent = `کاربر: ${user}`;
+    });
+
+    function formatDate(dateString) {
+      if (!dateString) return "";
+      const d = new Date(dateString);
+      if (isNaN(d)) return dateString;
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}/${m}/${day}`;
+    }
+
+    function formatNum(n) {
+      if (n === "" || n == null) return "";
+      const num = parseFloat(n);
+      if (isNaN(num)) return n;
+      return num.toFixed(2);
+    }
+
+    async function loadUserData() {
+      try {
+        const name = localStorage.getItem("name") || "";
+        const family = localStorage.getItem("family") || "";
+        const user = `${name} ${family}`.trim();
+
+        const response = await fetch(`${scriptUrl}?sheet=sum_grade&user=${encodeURIComponent(user)}`);
+        const data = await response.json();
+
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        if (data.length === 0) {
+          document.getElementById("loading").innerHTML = "هیچ داده‌ای برای شما ثبت نشده است.";
+          return;
+        }
+
+        data.forEach((row, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${row.visit_date}</td>
+            <td>${formatDate(row.score_date)}</td>
+            <td>${row.factory}</td>
+            <td>${row.area}</td>
+            <td><b>${formatNum(row.total)}</b></td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("gradesTable").style.display = "table";
+      } catch (err) {
+        document.getElementById("loading").innerHTML = "❌ خطا در بارگذاری داده‌ها.";
+        console.error(err);
+      }
+    }
+
+    // مدیریت منوی همبرگری
+    // const menuButton = document.getElementById("menuButton");
+    // const sideMenu = document.getElementById("sideMenu");
+
+    // menuButton.addEventListener("click", () => {
+    //   if (sideMenu.style.width === "250px") {
+    //     sideMenu.style.width = "0";
+    //   } else {
+    //     sideMenu.style.width = "250px";
+    //   }
+    // });
+
+    // مدیریت دکمه خروج
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      window.location.href = '5s_question.html';
+    });
+
+    // بارگذاری داده‌ها
+    loadUserData();
+  </script>
+</body>
+
+</html>
