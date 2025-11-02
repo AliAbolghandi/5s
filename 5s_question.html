@@ -329,6 +329,7 @@
     }
 
     .score-btn {
+      font-family: 'Yekan', sans-serif;
       padding: 6px 12px;
       border: 1px solid var(--primary);
       background: white;
@@ -465,13 +466,13 @@
       padding-top: 60px;
       direction: rtl;
       z-index: 1000;
-      
+
     }
 
     .side-menu a {
       padding: 12px 25px;
       background-color: rgba(114, 73, 179, 0.15);
-      
+
       border-radius: 20px;
       text-decoration: none;
       color: #010002;
@@ -479,12 +480,12 @@
       transition: 0.2s;
       font-size: 16px;
     }
-    
 
-     .side-menu a:hover {
+
+    .side-menu a:hover {
       background-color: rgba(255, 255, 255, 0.2);
       border-radius: 8px;
-      
+
     }
 
     .side-menu p {
@@ -494,10 +495,10 @@
       display: block;
       transition: 0.2s;
       font-size: 20px;
-      
+
     }
 
-   
+
 
 
 
@@ -760,7 +761,7 @@
     <div id="sideMenu" class="side-menu">
       <P>__________</P>
       <a id="gozaresh" href="report.html">گزارش ارزیابی من</a>
-      
+
       <a id="logout" href="index.html">خروج</a>
     </div>
 
@@ -996,42 +997,43 @@
     function renderQuestions(factory, area) {
       const container = document.getElementById("questions-container");
       container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
+
+      const scoreLabels = ["خیلی ضعیف", "ضعیف", "متوسط", "خوب", "خیلی خوب", "عالی"];
+
       const questions = data.filter(r => r[0] === factory && r[1] === area);
       questions.forEach((row, index) => {
         const qDiv = document.createElement("div");
         qDiv.className = "question";
         qDiv.innerHTML = `
-                <p>${row[4]} (وزن: ${row[5]})</p>
-                  <div class="score-options" 
-                    data-qno="${row[2]}"
-                    data-category="${row[3]}"
-                    data-question="${row[4]}"
-                    data-weight="${row[5]}"
-                    data-score="">
-                    ${[0, 1, 2, 3, 4, 5].map(num =>
-          `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${num}</button>`
+      <p>${row[4]} (وزن: ${row[5]})</p>
+      <div class="score-options"
+        data-qno="${row[2]}"
+        data-category="${row[3]}"
+        data-question="${row[4]}"
+        data-weight="${row[5]}"
+        data-score="">
+        ${scoreLabels.map((label, num) =>
+          `<button type="button" class="score-btn" onclick="selectScore(this, ${num})">${label}</button>`
         ).join("")}
-                </div>
-                <textarea class="desc-box" placeholder="اگر نیاز به توضیحاتی هست در اینجا بنویسید"></textarea>
-
-                `;
-
+      </div>
+      <textarea class="desc-box" placeholder="اگر نیاز به توضیحاتی هست در اینجا بنویسید"></textarea>
+    `;
         container.appendChild(qDiv);
       });
 
       container.innerHTML += `
-         <div id="result">جمع امتیاز واحد: 0</div>
-            <button class="btn" id="submitBtn" onclick="confirmSubmit()">ثبت ارزیابی</button>
-         <div class="loading" id="submitLoading" style="display:none;">
-                <div class="loading-spinner"></div>
-                    <p>در حال ثبت اطلاعات...</p>
-                </div>
-                 <div id="successMessage" style="display:none; background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
-                     ✅ اطلاعات با موفقیت ذخیره شدند
-                 </div>
-        `;
-
+    <div id="result">جمع امتیاز واحد: 0</div>
+    <button class="btn" id="submitBtn" onclick="confirmSubmit()">ثبت ارزیابی</button>
+    <div class="loading" id="submitLoading" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>در حال ثبت اطلاعات...</p>
+    </div>
+    <div id="successMessage" style="display:none; background: var(--success2); color:white; padding:12px; margin-top:15px; border-radius:var(--border-radius); box-shadow:var(--box-shadow); text-align:center;">
+      ✅ اطلاعات با موفقیت ذخیره شدند
+    </div>
+  `;
     }
+
 
     function nextFocus(input, index) {
       if (input.value !== "" && (input.value < 0 || input.value > 5)) {
@@ -1210,7 +1212,7 @@
       }
     });
 
-   
+
   </script>
 
 </body>
