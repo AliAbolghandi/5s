@@ -498,6 +498,11 @@
 
     }
 
+    #sideMenu a#admin-panel-btn {
+    font-weight: bold;
+    color: #010002;
+}
+
 
 
 
@@ -691,7 +696,7 @@
       }
 
       .score-btn {
-      
+
         font-size: 10px;
       }
 
@@ -737,7 +742,7 @@
       }
 
       .score-btn {
-      
+
         font-size: 8px;
       }
 
@@ -806,15 +811,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.min.js"></script>
   <script>
-    //خواندن و نمایش نام در داشبورد
-    document.addEventListener("DOMContentLoaded", () => {
-      const name = localStorage.getItem("name") || "نام";
-      const family = localStorage.getItem("family") || "نام‌خانوادگی";
-      const phone = localStorage.getItem("phone") || "شماره موبایل";
+    // //خواندن و نمایش نام در داشبورد
+    // document.addEventListener("DOMContentLoaded", () => {
+    //   const name = localStorage.getItem("name") || "نام";
+    //   const family = localStorage.getItem("family") || "نام‌خانوادگی";
+    //   const phone = localStorage.getItem("phone") || "شماره موبایل";
 
-      document.querySelector("#dashboard .username").textContent = name + " " + family + " " + "عزیز خوش آمدید ";
-      document.querySelector("#dashboard .phone").textContent = "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
-    });
+    //   document.querySelector("#dashboard .username").textContent = name + " " + family + " " + "عزیز خوش آمدید ";
+    //   document.querySelector("#dashboard .phone").textContent = "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
+    // });
 
     const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=0&single=true&output=csv";
     const sheetUrlAdmin = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=297000617&single=true&output=csv";
@@ -1081,7 +1086,7 @@
       document.getElementById("submitBtn").style.display = "none";
       document.getElementById("successMessage").style.display = "none";
 
-      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyfrQaRhUBn_sldrflhJvPActzI7G1JheCC3jfBVsub2TEvUSw1152OEJXjeiPQF9mt/exec";
+      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyonyQC6SSHZDrpvnFh5bMFnHjBPtYStKD3y1SModD3bPYSkNH0gO9pwmnlaY9CD0Yw/exec";
       const name = localStorage.getItem("name") || "نام";
       const family = localStorage.getItem("family") || "نام‌خانوادگی";
       const user = name + " " + family;
@@ -1224,6 +1229,40 @@
         sideMenu.style.width = "250px";
       }
     });
+
+
+ 
+ 
+    document.addEventListener("DOMContentLoaded", () => {
+
+      // اطلاعات کاربر
+      const name = localStorage.getItem("name") || "نام";
+      const family = localStorage.getItem("family") || "نام‌خانوادگی";
+      const phone = localStorage.getItem("phone") || "شماره موبایل";
+
+      document.querySelector("#dashboard .username").textContent =
+        name + " " + family + " عزیز خوش آمدید ";
+      document.querySelector("#dashboard .phone").textContent =
+        "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
+
+      // سطح دسترسی admin
+      const role = localStorage.getItem("access");
+
+      if (role && role.toUpperCase() === "ADMIN") {
+        const sideMenu = document.getElementById("sideMenu");
+
+        const adminBtn = document.createElement("a");
+        adminBtn.href = "admin.html";
+        adminBtn.textContent = "مدیریت سیستم";
+        adminBtn.id = "admin-panel-btn";
+
+        const logoutBtn = document.getElementById("logout");
+        sideMenu.insertBefore(adminBtn, logoutBtn);
+      }
+
+    });
+
+
 
 
   </script>
