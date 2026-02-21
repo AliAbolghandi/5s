@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.fontcdn.ir/Font/Yekan/Yekan.css">
+  <!-- <link rel="stylesheet" href="https://cdn.fontcdn.ir/Font/Yekan/Yekan.css"> -->
+  <link rel="stylesheet" href="./library/font/yekan/yekan.css">
 
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4361ee">
@@ -29,6 +30,7 @@
       --light: #f8f9fa;
       --dark: #212529;
       --gray: #6c757d;
+      --lock: #bf2424;
       --border-radius: 12px;
       --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
@@ -203,8 +205,25 @@
 
     .btn.disabled {
       background: var(--gray);
-      cursor: not-allowed;
-      opacity: 0.7;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    .btn.locked {
+      background: var(--lock) !important;
+      color: #999 !important;
+      cursor: not-allowed !important;
+      opacity: 0.6 !important;
+      position: relative;
+    }
+
+    .btn.locked::after {
+      content: "🔒";
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
     }
 
     .btn-danger {
@@ -499,16 +518,9 @@
     }
 
     #sideMenu a#admin-panel-btn {
-    font-weight: bold;
-    color: #010002;
-}
-
-
-
-
-
-
-
+      font-weight: bold;
+      color: #010002;
+    }
 
     @keyframes spin {
       0% {
@@ -768,17 +780,13 @@
 
 
     </div>
-    <!-- ✅ دکمه خروج 
-    <button id="logoutBtn" class="btn-logout" onclick="window.location.href='index.html'">
-      🔴 خروج
-    </button>
-    -->
+
     <!-- دکمه همبرگری -->
     <div id="menuButton" class="menu-btn">&#9776;</div>
     <!-- منو همبرگری -->
     <div id="sideMenu" class="side-menu">
       <P>__________</P>
-      <a id="gozaresh" href="report.html">گزارش ارزیابی من</a>
+      <a id="gozaresh" href="personal_report.html">گزارش ارزیابی من</a>
 
       <a id="logout" href="index.html">خروج</a>
     </div>
@@ -811,53 +819,77 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.min.js"></script>
   <script>
-    // //خواندن و نمایش نام در داشبورد
-    // document.addEventListener("DOMContentLoaded", () => {
-    //   const name = localStorage.getItem("name") || "نام";
-    //   const family = localStorage.getItem("family") || "نام‌خانوادگی";
-    //   const phone = localStorage.getItem("phone") || "شماره موبایل";
-
-    //   document.querySelector("#dashboard .username").textContent = name + " " + family + " " + "عزیز خوش آمدید ";
-    //   document.querySelector("#dashboard .phone").textContent = "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
-    // });
-
-    const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=0&single=true&output=csv";
-    const sheetUrlAdmin = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=297000617&single=true&output=csv";
+    // متغیرهای سراسری
+    const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9fdan69lZjIcmZIn0keMM25qPO0jZqr-prjpIxHlnHcgOB3Kr3YEky36qXfn7MNtBHe89JBXtA5pB/pub?gid=1258571419&single=true&output=csv";
+    const sheetUrl_VisitingArea = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=181820697&single=true&output=csv";
 
     let data = [];
     let selectedFactory = "";
     let selectedArea = "";
-
-    // async function checkTrikhArzyabiEnd() {
-    //     const res = await fetch(sheetUrlAdmin);
-    //     const text = await res.text();
-    //     const delimiter = text.includes(";") ? ";" : ",";
-    //     const rows = text.split("\n");
-    //     console.log("Rows:", rows);
-    //     const TrikhArzyabiEnd = rows[1].split(delimiter)[1].trim();
-    //     console.log("TrikhArzyabiEnd:", TrikhArzyabiEnd);
-    // }
-    // checkTrikhArzyabiEnd();
-
-
     let TarikhBazdid = "";
     let TrikhArzyabi = "";
 
+    // شیء برای ذخیره کارخانه‌ها و نواحی مجاز در تاریخ جاری
+    let allowedFactoriesAndAreas = {
+      factories: new Set(),
+      areas: new Map() // Map<کارخانه, Set<ناحیه>>
+    };
 
+    // توابع تبدیل تاریخ
+    function toJalaali(gy, gm, gd) {
+      const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      let gy2 = (gm > 2) ? (gy + 1) : gy;
+      let days = 355666 + (365 * gy) + Math.floor((gy + 3) / 4)
+        - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400)
+        + gd + g_d_m[gm - 1];
+      let jy = -1595 + 33 * Math.floor(days / 12053);
+      days %= 12053;
+      jy += 4 * Math.floor(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        jy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      const jm = (days < 186) ? 1 + Math.floor(days / 31)
+        : 7 + Math.floor((days - 186) / 30);
+      const jd = 1 + ((days < 186) ? (days % 31)
+        : ((days - 186) % 30));
+      return { jy, jm, jd };
+    }
+
+    function dateToNumber(str) {
+      const [y, m, d] = str.split("/").map(Number);
+      return y * 10000 + m * 100 + d;
+    }
+
+    // تبدیل عدد انگلیسی به فارسی
+    function toPersianDigits(str) {
+      return str.toString().replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+    }
+
+    // نمایش مدال
+    function showModal(message) {
+      document.getElementById("modalMessage").textContent = message;
+      document.getElementById("alertModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("alertModal").style.display = "none";
+    }
+
+    // بارگذاری داده‌ها و تعیین کارخانه‌ها و نواحی مجاز
     async function loadData() {
       try {
-        document.getElementById("factoryLoading").style.display = "block"; // نمایش لودینگ
+        document.getElementById("factoryLoading").style.display = "block";
 
-        // 1️⃣ خواندن آخرین ردیف پر از شیت admin
-        const resAdmin = await fetch(sheetUrlAdmin);
+        // 1️⃣ خواندن آخرین ردیف پر از شیت admin برای تاریخ‌ها
+        const resAdmin = await fetch(sheetUrl_VisitingArea);
         const textAdmin = await resAdmin.text();
         const delimiterAdmin = textAdmin.includes(";") ? ";" : ",";
         const rowsAdmin = textAdmin.trim().split("\n").filter(r => r.trim() !== "");
 
         // آخرین ردیف پر (به جز هدر)
         const lastRow = rowsAdmin[rowsAdmin.length - 1].split(delimiterAdmin).map(c => c.trim());
-
-
 
         // ستون A = تاریخ بازدید
         TarikhBazdid = lastRow[0] || "";
@@ -870,12 +902,7 @@
           return;
         }
 
-        // ✳️ تابع تبدیل عدد انگلیسی به فارسی
-        function toPersianDigits(str) {
-          return str.toString().replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
-        }
-
-        // اصلاح فرمت تاریخ برای نمایش در داشبورد
+        // نمایش تاریخ‌ها به فارسی
         let formattedTrikhArzyabi = TrikhArzyabi;
         const dateMatch = TrikhArzyabi.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
         if (dateMatch) {
@@ -885,110 +912,111 @@
           formattedTrikhArzyabi = `${year}/${month}/${day}`;
         }
 
-        // ✳️ نمایش تاریخ‌ها به فارسی
         const TrikhArzyabiElement = document.getElementById("TrikhArzyabiEnd-date");
         if (TrikhArzyabiElement) {
           TrikhArzyabiElement.textContent = toPersianDigits(formattedTrikhArzyabi);
         }
 
-        // نمایش تاریخ بازدید اگر در HTML المنت مخصوص دارد
-        const TarikhBazdidElement = document.getElementById("TarikhBazdid-date");
-        if (TarikhBazdidElement && TarikhBazdid) {
-          TarikhBazdidElement.textContent = toPersianDigits(TarikhBazdid);
-        }
-
-        // 2️⃣ تاریخ امروز شمسی
+        // 2️⃣ خواندن کل شیت visiting area برای تعیین کارخانه‌ها و نواحی مجاز
+        const dataVisiting = rowsAdmin.slice(1); // حذف هدر
         const today = new Date();
         const jToday = toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
-
-        function toJalaali(gy, gm, gd) {
-          const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-          let gy2 = (gm > 2) ? (gy + 1) : gy;
-          let days = 355666 + (365 * gy) + Math.floor((gy + 3) / 4)
-            - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400)
-            + gd + g_d_m[gm - 1];
-          let jy = -1595 + 33 * Math.floor(days / 12053);
-          days %= 12053;
-          jy += 4 * Math.floor(days / 1461);
-          days %= 1461;
-          if (days > 365) {
-            jy += Math.floor((days - 1) / 365);
-            days = (days - 1) % 365;
-          }
-          const jm = (days < 186) ? 1 + Math.floor(days / 31)
-            : 7 + Math.floor((days - 186) / 30);
-          const jd = 1 + ((days < 186) ? (days % 31)
-            : ((days - 186) % 30));
-          return { jy, jm, jd };
-        }
-
-        function dateToNumber(str) {
-          const [y, m, d] = str.split("/").map(Number);
-          return y * 10000 + m * 100 + d;
-        }
-
         const todayNum = jToday.jy * 10000 + jToday.jm * 100 + jToday.jd;
         const TrikhArzyabiNum = dateToNumber(TrikhArzyabi);
 
-        // 3️⃣ مقایسه و لود داده‌ها
-        if (todayNum <= TrikhArzyabiNum) {
-          const res = await fetch(sheetUrlQuestion);
-          const text = await res.text();
-          const delimiter = text.includes(";") ? ";" : ",";
-          const rows = text.split("\n").slice(1);
-          data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
-          renderFactories();
-        } else {
+        // بررسی زمان ارزیابی
+        if (todayNum > TrikhArzyabiNum) {
           showModal("زمان ارزیابی در تاریخ " + toPersianDigits(TrikhArzyabi) + " به پایان رسیده است");
+          document.getElementById("factoryLoading").style.display = "none";
+          return;
         }
+
+        // پاک کردن داده‌های قبلی
+        allowedFactoriesAndAreas.factories.clear();
+        allowedFactoriesAndAreas.areas.clear();
+
+        // پردازش داده‌های visiting area
+        dataVisiting.forEach(row => {
+          const cells = row.split(delimiterAdmin).map(cell => cell.trim());
+          if (cells.length >= 4) {
+            const startDateStr = cells[0]; // تاریخ شروع
+            const endDateStr = cells[1];   // تاریخ پایان
+            const factory = cells[2];      // کارخانه
+            const area = cells[3];         // ناحیه
+
+            // تبدیل تاریخ‌ها به عدد
+            const startNum = dateToNumber(startDateStr);
+            const endNum = dateToNumber(endDateStr);
+
+            // بررسی اینکه آیا امروز در بازه است
+            if (todayNum >= startNum && todayNum <= endNum) {
+              // افزودن کارخانه به لیست مجاز
+              allowedFactoriesAndAreas.factories.add(factory);
+
+              // افزودن ناحیه به کارخانه مربوطه
+              if (!allowedFactoriesAndAreas.areas.has(factory)) {
+                allowedFactoriesAndAreas.areas.set(factory, new Set());
+              }
+              allowedFactoriesAndAreas.areas.get(factory).add(area);
+            }
+          }
+        });
+
+        // 3️⃣ بارگیری داده‌های سوالات
+        const res = await fetch(sheetUrlQuestion);
+        const text = await res.text();
+        const delimiter = text.includes(";") ? ";" : ",";
+        const rows = text.split("\n").slice(1);
+        data = rows.map(r => r.split(delimiter).map(cell => cell.trim()));
+
+        // 4️⃣ رندر کارخانه‌ها
+        renderFactories();
 
         document.getElementById("factoryLoading").style.display = "none";
 
       } catch (err) {
         console.error("خطا در لود داده‌ها:", err);
         document.getElementById("factoryLoading").style.display = "none";
+        showModal("خطا در بارگذاری داده‌ها. لطفا اتصال اینترنت را بررسی کنید.");
       }
     }
 
-    function showModal(message) {
-      document.getElementById("modalMessage").textContent = message;
-      document.getElementById("alertModal").style.display = "block";
-    }
-    function closeModal() {
-      document.getElementById("alertModal").style.display = "none";
-    }
-
-
-
-
-
-
-
-
-
-
+    // رندر کارخانه‌ها با قفل کردن موارد غیرمجاز
     function renderFactories() {
       const container = document.getElementById("factory-container");
-      document.getElementById("factoryLoading").style.display = "none"; // ⬅️ مخفی کردن لودینگ
-      container.innerHTML = ""; // پاک کردن محتوا بعد از لودینگ
+      document.getElementById("factoryLoading").style.display = "none";
+      container.innerHTML = "";
       container.style.display = "flex";
+
       const factories = [...new Set(data.map(r => r[0]).filter(f => f))];
+
       factories.forEach(factory => {
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.textContent = factory;
-        btn.onclick = () => {
-          selectedFactory = factory;
-          highlightSelection(container, btn);
-          renderAreas(factory);
-        };
+
+        // بررسی آیا کارخانه در لیست مجاز است
+        if (allowedFactoriesAndAreas.factories.has(factory)) {
+          // کارخانه مجاز است - فعال
+          btn.onclick = () => {
+            selectedFactory = factory;
+            highlightSelection(container, btn);
+            renderAreas(factory);
+          };
+        } else {
+          // کارخانه غیرمجاز - قفل شده
+          btn.classList.add("locked");
+          btn.disabled = true;
+          btn.title = "در این بازه زمانی امکان امتیاز دهی به این بخش وجود ندارد";
+        }
+
         container.appendChild(btn);
       });
     }
 
-
+    // رندر نواحی با قفل کردن موارد غیرمجاز
     function renderAreas(factory) {
-      document.getElementById("factoryDivider").style.display = "block"; // ⬅️ نمایش خط جداکننده
+      document.getElementById("factoryDivider").style.display = "block";
 
       const container = document.getElementById("area-container");
       const qContainer = document.getElementById("questions-container");
@@ -998,20 +1026,35 @@
       container.style.display = "flex";
 
       const areas = [...new Set(data.filter(r => r[0] === factory).map(r => r[1]).filter(a => a))];
+
+      // دریافت نواحی مجاز برای این کارخانه
+      const allowedAreasForFactory = allowedFactoriesAndAreas.areas.get(factory) || new Set();
+
       areas.forEach(area => {
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.textContent = area;
-        btn.onclick = () => {
-          selectedArea = area;
-          highlightSelection(container, btn);
-          renderQuestions(factory, area);
-        };
+
+        // بررسی آیا ناحیه برای این کارخانه مجاز است
+        if (allowedAreasForFactory.has(area)) {
+          // ناحیه مجاز است - فعال
+          btn.onclick = () => {
+            selectedArea = area;
+            highlightSelection(container, btn);
+            renderQuestions(factory, area);
+          };
+        } else {
+          // ناحیه غیرمجاز - قفل شده
+          btn.classList.add("locked");
+          btn.disabled = true;
+          btn.title = "این ناحیه در بازه زمانی جاری مجاز نیست";
+        }
+
         container.appendChild(btn);
       });
     }
 
-
+    // بقیه توابع بدون تغییر باقی می‌مانند
     function renderQuestions(factory, area) {
       const container = document.getElementById("questions-container");
       container.innerHTML = `<h3>سوالات ${area} - ${factory}</h3>`;
@@ -1052,19 +1095,25 @@
   `;
     }
 
+    function highlightSelection(container, activeBtn) {
+      const buttons = container.querySelectorAll(".btn:not(.locked)");
+      buttons.forEach(btn => {
+        if (btn === activeBtn) {
+          btn.classList.add("active");
+          btn.classList.remove("disabled");
+        } else {
+          btn.classList.remove("active");
+          btn.classList.add("disabled");
+        }
+      });
+    }
 
-    function nextFocus(input, index) {
-      if (input.value !== "" && (input.value < 0 || input.value > 5)) {
-        alert("عدد باید بین ۰ تا ۵ باشد");
-        input.value = "";
-        return;
-      }
+    function selectScore(btn, score) {
+      const parent = btn.parentElement;
+      parent.dataset.score = score;
+      parent.querySelectorAll(".score-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
       updateResult();
-
-      const inputs = document.querySelectorAll("#questions-container input");
-      if (input.value !== "" && index + 1 < inputs.length) {
-        inputs[index + 1].focus();
-      }
     }
 
     function updateResult() {
@@ -1078,15 +1127,12 @@
       document.getElementById("result").textContent = "جمع امتیاز: %" + total.toFixed(2);
     }
 
-
-
     async function finalSubmit() {
-      // نمایش لودینگ و مخفی کردن دکمه
       document.getElementById("submitLoading").style.display = "block";
       document.getElementById("submitBtn").style.display = "none";
       document.getElementById("successMessage").style.display = "none";
 
-      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyZZ0vD9mKxzMd_bJIz2hU79M2cnMgB4oVaqGsWF-xq4MAzKzaZVEsRz-vSR1ENRar8/exec";
+      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIVwdnM4Nf2I3jrHXa5zK1oH0GSRbuB7NS_PrbQhkEJwaf-J9meWSkXrtn6FNsuUBi/exec";
       const name = localStorage.getItem("name") || "نام";
       const family = localStorage.getItem("family") || "نام‌خانوادگی";
       const user = name + " " + family;
@@ -1095,7 +1141,6 @@
 
       const qDivs = document.querySelectorAll(".score-options");
       qDivs.forEach(div => {
-        // توضیح مربوط به هر سوال
         const descEl = div.parentElement.querySelector(".desc-box");
         const desc = descEl ? descEl.value.trim() : "";
 
@@ -1105,7 +1150,6 @@
           document.getElementById("submitBtn").style.display = "block";
           return;
         }
-
 
         rows.push({
           tarikhBazdid: TarikhBazdid,
@@ -1118,11 +1162,9 @@
           weight: div.dataset.weight || "1",
           score: div.dataset.score || "0",
           description: desc,
-
         });
       });
 
-      // آماده‌سازی برای ارسال
       const params = new URLSearchParams();
       params.append('rows', JSON.stringify(rows));
 
@@ -1136,7 +1178,6 @@
 
         const text = await res.text();
 
-        // بررسی پاسخ سرور
         if (text.trim().toUpperCase() === "OK" || text.includes("success")) {
           document.getElementById("submitLoading").style.display = "none";
           document.getElementById("successMessage").style.display = "block";
@@ -1156,23 +1197,6 @@
       }
     }
 
-
-    loadData();
-
-    function highlightSelection(container, activeBtn) {
-      const buttons = container.querySelectorAll(".btn");
-      buttons.forEach(btn => {
-        if (btn === activeBtn) {
-          btn.classList.add("active");
-          btn.classList.remove("disabled");
-        } else {
-          btn.classList.remove("active");
-          btn.classList.add("disabled");
-        }
-      });
-    }
-
-
     function confirmSubmit() {
       const isConfirmed = confirm("آیا از ثبت امتیازات اطمینان دارید؟");
       if (isConfirmed) {
@@ -1180,45 +1204,20 @@
       }
     }
 
-
-    function resetForm() {
-      // ریست فرم و بازگشت به انتخاب واحد
-      document.getElementById("questions-container").innerHTML = "";
-      document.getElementById("area-container").innerHTML = "";
-      document.getElementById("factoryDivider").style.display = "none";
-      renderFactories();
-    }
-
-    // 6 گزینه امتیاز دهی
-    function selectScore(btn, score) {
-      const parent = btn.parentElement; // div.score-options
-      parent.dataset.score = score; // ذخیره انتخاب
-
-      // دکمه‌ها رو ریست کن
-      parent.querySelectorAll(".score-btn").forEach(b => b.classList.remove("selected"));
-      // دکمه انتخاب‌شده رو فعال کن
-      btn.classList.add("selected");
-
-      updateResult();
-    }
-
-    function autoResize(textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = (textarea.scrollHeight) + 'px';
-    }
+    // بارگذاری اولیه داده‌ها
+    document.addEventListener("DOMContentLoaded", () => {
+      loadData();
+    });
 
 
-
-
+    // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
         .then(() => console.log('Service Worker ثبت شد'))
         .catch(err => console.error('ثبت Service Worker شکست خورد:', err));
     }
 
-
-
-    //-------------------------------------------------------------------
+    // منوی همبرگری
     const menuButton = document.getElementById("menuButton");
     const sideMenu = document.getElementById("sideMenu");
 
@@ -1230,12 +1229,8 @@
       }
     });
 
-
- 
- 
+    // تنظیم اطلاعات کاربر و دسترسی ادمین
     document.addEventListener("DOMContentLoaded", () => {
-
-      // اطلاعات کاربر
       const name = localStorage.getItem("name") || "نام";
       const family = localStorage.getItem("family") || "نام‌خانوادگی";
       const phone = localStorage.getItem("phone") || "شماره موبایل";
@@ -1245,28 +1240,18 @@
       document.querySelector("#dashboard .phone").textContent =
         "از این که در بالا بردن کیفیت عملکرد مجتمع فولاد روهینا مشارکت می کنید بی نهایت سپاسگذاریم";
 
-      // سطح دسترسی admin
       const role = localStorage.getItem("access");
-
       if (role && role.toUpperCase() === "ADMIN") {
         const sideMenu = document.getElementById("sideMenu");
-
         const adminBtn = document.createElement("a");
-        adminBtn.href = "admin.html";
+        adminBtn.href = "visiting_area.html";
         adminBtn.textContent = "مدیریت سیستم";
         adminBtn.id = "admin-panel-btn";
-
         const logoutBtn = document.getElementById("logout");
         sideMenu.insertBefore(adminBtn, logoutBtn);
       }
-
     });
-
-
-
-
   </script>
-
 </body>
 
 </html>
