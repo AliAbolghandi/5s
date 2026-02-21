@@ -369,7 +369,7 @@
     <!-- منو همبرگری -->
     <div id="sideMenu" class="side-menu">
       <P>__________</P>
-      <a id="gozaresh" href="report.html">گزارش ارزیابی من</a>
+      <a id="gozaresh" href="personal_report.html">گزارش ارزیابی من</a>
 
       <a id="logout" href="index.html">خروج</a>
     </div>
@@ -420,7 +420,7 @@
 
     <!-- فرم پنهان برای ارسال داده‌ها -->
     <form id="proxyForm"
-      action="https://script.google.com/macros/s/AKfycbyQIx9q02NTEN5XUge1fVrYQeCRmVNOH7Zg6EYoVl2O1oM10adWwscX8A4N_ge9AYR0/exec"
+      action="https://script.google.com/macros/s/AKfycbyKU9K3hTUjJXqkimTD64heBc4OoNkrf3K5gFlzAsJhYMlyNFTVCdzv9jxgJWO4lwAJ/exec"
       method="POST" target="proxyIframe">
       <input type="hidden" name="rows" id="hiddenRows" value="">
     </form>
@@ -445,7 +445,7 @@
   <script>
    
     const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=0&single=true&output=csv";
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwWya_qjQmgy4K6utHBAvb9bTqAQG_tGLQw3CEVdMm0lJG6mK5DXFEtKKmTN-0QaffF/exec"
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwKkWcxMYnHyZHlRwPXq8NjUzF7VKQ5NuBOxmZKQFnUI-eDRkiIqEOE806P_lfjlVEt/exec"
     
 
     // متغیرهای برنامه
@@ -695,7 +695,7 @@
         document.getElementById('resultMsg').textContent = '✅ نواحی با موفقیت ثبت شدند';
 
         // پاکسازی فرم
-        clearForm();
+        // clearForm();
 
       } catch (err) {
         console.error('خطا در ارسال:', err);
