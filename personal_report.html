@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>گزارش ارزیابی من</title>
-     <link rel="stylesheet" href="./library/font/yekan/yekan.css">
+  <link rel="stylesheet" href="./library/font/yekan/yekan.css">
   <style>
     :root {
       --primary: #4361ee;
@@ -38,19 +38,34 @@
 
     }
 
-    .dashboard {
+    #dashboard {
       width: 100%;
-      height: 20vh;
-      color: var(--light);
-      background: var(--primary);
+      height: 18vh;
       border-radius: 0 0 10px 10px;
-      box-shadow: var(--box-shadow);
-      margin-bottom: 25px;
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 28px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: row;
       align-items: center;
-      flex-wrap: wrap;
+      justify-content: space-between;
       box-shadow: var(--box-shadow);
+      text-align: center;
+    }
+
+    #dashboard .avatar img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, .3)
+    }
+
+    #dashboard .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-left: 15px;
+      text-align: center;
     }
 
     .report-text {
@@ -130,6 +145,52 @@
       margin: 15px auto;
     }
 
+    .menu-btn {
+      font-size: 30px;
+      cursor: pointer;
+      padding: 10px;
+      color: white;
+      z-index: 1100;
+      position: relative;
+    }
+
+    .side-menu {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      backdrop-filter: blur(12px);
+      background: rgba(55, 4, 138, 0.15);
+      box-shadow: 2px 0 15px rgba(2, 0, 0, 0.3);
+      border-right: 1px solid rgba(49, 8, 233, 0.3);
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 60px;
+      direction: rtl;
+      z-index: 1000;
+    }
+
+    .side-menu a {
+      padding: 12px 25px;
+      background-color: rgba(114, 73, 179, 0.15);
+      border-radius: 20px;
+      text-decoration: none;
+      color: #010002;
+      display: block;
+      transition: 0.2s;
+      font-size: 16px;
+    }
+
+    .side-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+
+    #sideMenu a#admin-panel-btn {
+      font-weight: bold;
+    }
+
     @keyframes spin {
       0% {
         transform: rotate(0deg);
@@ -172,17 +233,35 @@
 
 <body>
   <!-- داشبورد کاربر -->
-  <div class="dashboard">
-    <div class="report-text">
-      <a> گزارش ارزیابی من</a>
+  <div id="dashboard">
+    <!--      <h2>کاربر</h2>  -->
+    <div class="avatar">
+      <img src="./img/icon-150-150.png" alt="User Avatar">
+    </div>
+    <div class="user-info">
+      <p class="username">نام کاربر</p>
+      <p class="phone"></p>
+
+
+
     </div>
 
-    <!-- دکمه خروج -->
-    <button id="logoutBtn" class="btn-logout">
-      <img src="./img/icon/ic_Back.png" alt="بازگشت" width="50" height="50">
-    </button>
+    <!-- دکمه همبرگری -->
+    <div id="menuButton" class="menu-btn">&#9776;</div>
+    <!-- منو همبرگری -->
+    <div id="sideMenu" class="side-menu">
+      <P>__________</P>
+
+      <a id="mainpage" href="5s_question.html">صفحه اصلی</a>
+
+      <a id="gozaresh" href="personal_report.html">گزارش ارزیابی من</a>
+
+      <a id="logout" href="index.html">خروج</a>
+    </div>
 
   </div>
+
+
 
 
   <div id="loading">
@@ -208,15 +287,38 @@
     const scriptUrl = "https://script.google.com/macros/s/AKfycbwUTMGOScDXhVQCWbpnRFpGhIo86a4Q61fjP87LNhQ9FE1XCSxtIre40iV8JeQwu_2J/exec";
 
     // بارگذاری اطلاعات کاربر
-    document.addEventListener("DOMContentLoaded", () => {
-      const name = localStorage.getItem("name") || "";
-      const family = localStorage.getItem("family") || "";
-      const phone = localStorage.getItem("phone") || "";
-      const user = `${name} ${family}`.trim();
 
-      document.getElementById("userFullName").textContent = user || "نام کاربر";
-      document.getElementById("userPhone").textContent = phone || "شماره موبایل";
-      document.getElementById("userInfo").textContent = `کاربر: ${user}`;
+    // منوی همبرگری
+    const menuButton = document.getElementById("menuButton");
+    const sideMenu = document.getElementById("sideMenu");
+
+    menuButton.addEventListener("click", () => {
+      if (sideMenu.style.width === "250px") {
+        sideMenu.style.width = "0";
+      } else {
+        sideMenu.style.width = "250px";
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const name = localStorage.getItem("name") || "نام";
+      const family = localStorage.getItem("family") || "نام‌خانوادگی";
+
+      document.querySelector("#dashboard .username").textContent =
+        name + " " + family + " عزیز خوش آمدید ";
+
+
+      // فراخوان دکمه "مدیریت سیستم" در صورت ادمین بودن
+      const role = localStorage.getItem("access");
+      if (role && role.toUpperCase() === "ADMIN") {
+        const adminBtn = document.createElement("a");
+        adminBtn.href = "visiting_area.html";
+        adminBtn.textContent = "مدیریت سیستم";
+        adminBtn.id = "admin-panel-btn";
+
+        const logoutBtn = document.getElementById("logout");
+        sideMenu.insertBefore(adminBtn, logoutBtn);
+      }
     });
 
     function formatDate(dateString) {
@@ -275,22 +377,7 @@
       }
     }
 
-    // مدیریت منوی همبرگری
-    // const menuButton = document.getElementById("menuButton");
-    // const sideMenu = document.getElementById("sideMenu");
 
-    // menuButton.addEventListener("click", () => {
-    //   if (sideMenu.style.width === "250px") {
-    //     sideMenu.style.width = "0";
-    //   } else {
-    //     sideMenu.style.width = "250px";
-    //   }
-    // });
-
-    // مدیریت دکمه خروج
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      window.location.href = '5s_question.html';
-    });
 
     // بارگذاری داده‌ها
     loadUserData();
