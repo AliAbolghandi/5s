@@ -50,7 +50,8 @@
       flex-direction: row-reverse;
       align-items: center;
       justify-content: space-between;
-      box-shadow: var(--box-shadow)
+      box-shadow: var(--box-shadow);
+      text-align: center;
     }
 
     #dashboard .avatar img {
@@ -64,8 +65,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-left: 15px
+      margin-left: 15px;
+      text-align: center;
     }
+
+
 
     #main {
       width: 100%;
@@ -136,9 +140,9 @@
     .factory-item .badge {
       position: absolute;
       left: 8px;
-      top: 8px;
+      top: 14px;
       background: rgba(0, 0, 0, 0.06);
-      padding: 4px 8px;
+      padding: 1px 5px;
       border-radius: 999px;
       font-size: 12px
     }
@@ -369,6 +373,7 @@
     <!-- منو همبرگری -->
     <div id="sideMenu" class="side-menu">
       <P>__________</P>
+      <a id="mainpage" href="5s_question.html">صفحه اصلی</a>
       <a id="gozaresh" href="personal_report.html">گزارش ارزیابی من</a>
 
       <a id="logout" href="index.html">خروج</a>
@@ -392,8 +397,8 @@
         <div class="date-label">تاریخ شروع بازدید</div>
         <input id="visitStart" class="date-input" placeholder="۱۴۰۲/۰۱/۰۱" readonly />
       </div>
-      
-      
+
+
     </div>
 
     <hr
@@ -447,10 +452,10 @@
 
 
   <script>
-   
+
     const sheetUrlQuestion = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLQOZ1BULWMd-hYLNbp27FLhXSqic2zBD9Vw7w29BzzoTrwJliUAoRmVVKBWTdQq846up09UdiYLyc/pub?gid=0&single=true&output=csv";
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwKkWcxMYnHyZHlRwPXq8NjUzF7VKQ5NuBOxmZKQFnUI-eDRkiIqEOE806P_lfjlVEt/exec"
-    
+
 
     // متغیرهای برنامه
     let data = [];
